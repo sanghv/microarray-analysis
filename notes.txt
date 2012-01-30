@@ -1,0 +1,104 @@
+- Main Paper: 
+
+Mining Gene Expression Profiles: An Integrated Implementation of Kernel Principal Component Analysis and Singular Value Decomposition Original Research Article
+Genomics, Proteomics & Bioinformatics, Volume 8, Issue 3, September 2010, Pages 200-210
+
+Found on SciVerse:
+http://www.sciencedirect.com.ezproxy.lib.ucf.edu/science/article/pii/S1672022910600228
+
+
+- Purpose:
+
+Use Singular Value Decomposition (SVD) and Kernel Principal Component Analysis (KPCA)
+on open data sets (links to datasets will follow) of microarray data with the goal of
+identifying individual genes that are differentially expressed under different distinct
+conditions (diseases). SVD allows us to reduce the dimension of microarray data. Biplots
+will also be used to visualize the partitions of the microarray data and also observe the
+similarities in gene profiles. KCPA is used to project the data into a high-dimensional
+feature space (that will be reduced?). Since genes are not related in a linear fashion
+by any means this will be a perfect technique. 2 data sets are used in this paper: a 
+colon tumor dataset and a Lymphoma dataset. Results are compared against existing results
+of other researchers / college kids being coerced into writing research papers(?) in
+order to 'validate' their results.
+
+- Our goal:
+I haven't really clearly defined it and I'd like your help most definitely. Once we're
+spun up on SVD, KPCA, biplot stuff, and their procedure to make these pretty graph things
+they do so well in this paper then we can talk realistically about how much we can get
+done in this semester (while still being slackers). If this project is a walk in the park
+then I would love to use different ML algorithms on the same problem to compare n' stuff
+or maybe differential statistical validation techniques or visualization techniques to
+uncover different trends about the underlying data. Anything is fine.
+
+- Language and tools:
+We can keep it simple... Python has most of what we need. I don't know what version you guys
+want to use. I'm using 2.7 32-bit for some strange reason because I had a project last 
+semester for Senior Design which only worked on that. 
+	- SVD: is offered in the scipy library as 'linalg.svd( M )'. I have a test program to 
+	call the function and check out how easy to use... and well... it's pretty damn easy.
+	
+	- KPCA: is offered by scikit-learn. To download it use the ez_setup.py script and type:
+	
+	easy_install -U scikit-learn
+	
+	into your favorite terminal. Sadly, i'm using command prompt in windows :( for shame.
+	I haven't made a sample yet of KPCA. That's a big TODO.
+	
+	- biplot stuff : To be determined (TBD). I kinda of wanna spit our results or w/e to
+	a text file and use R to make some pretty graphs by reading in files into R. If you 
+	want to use Python libraries for visualization, then convince me otherwise. Either is
+	definitely fine. I secretly just want more skills in R and want to use it throughout
+	my masters degree here almost exclusively. It's powerful and beautiful once you tame the
+	beast. Especially ggplot2... holy shit.
+
+
+- Other papers we should read:
+	- TODO
+	- There's a lot of papers out there which are doing similar things. Getting a different
+	perspective on how to go about this may be good given these papers are only meant to be
+	published and rarely meant to actually be understood (so they leave out a mass of 
+	details, sigh)
+	
+- Polish up on your matrices:
+	- There is a MOST excellent link I found on the interwebz which spins you back up on 
+	matrices, all the jargon, and something I had previously not understood b/c
+	I don't come from math: Eigenvalues. This tutorial is the application of problems 
+	to information theory and search engine stuff but it still totally applicable and
+	a very well put together description of everything that clicks on the first read
+	which makes it a pleasant experience:
+	
+	Matrix Tutorial 1: Stochastic Matrices	
+	http://www.miislita.com/information-retrieval-tutorial/matrix-tutorial-1-stochastic-matrices.html
+	Matrix Tutorial 2: Basic Matrix Operations
+	http://www.miislita.com/information-retrieval-tutorial/matrix-tutorial-2-matrix-operations.html
+	Matrix Tutorial 3: Eigenvalues and Eigenvectors
+	http://www.miislita.com/information-retrieval-tutorial/matrix-tutorial-3-eigenvalues-eigenvectors.html
+	
+- SVD
+	- Once you're comfortable with that you can continue on to Singular Value Decomposition (SVD)
+	tutorial. You may want to script the first half of intro because it's all about search engine stuff:
+	
+	SVD and LSI Tutorial 1: Understanding SVD and LSI
+	http://www.miislita.com/information-retrieval-tutorial/svd-lsi-tutorial-1-understanding.html
+	SVD and LSI Tutorial 2: Computing Singular Values
+	http://www.miislita.com/information-retrieval-tutorial/svd-lsi-tutorial-2-computing-singular-values.html
+	SVD and LSI Tutorial 3: Computing the Full SVD of a Matrix
+	http://www.miislita.com/information-retrieval-tutorial/svd-lsi-tutorial-3-full-svd.html
+	SVD and LSI Tutorial 4: Latent Semantic Indexing (LSI) How-to Calculations
+	http://www.miislita.com/information-retrieval-tutorial/svd-lsi-tutorial-4-lsi-how-to-calculations.html
+	SVD and LSI Tutorial 5: LSI Keyword Research and Co-Occurrence Theory
+	http://www.miislita.com/information-retrieval-tutorial/svd-lsi-tutorial-5-lsi-keyword-research-co-occurrence.html
+	
+	
+- KPCA
+	- I haven't explored this yet but expect the first hit on google to be informative. It's a 20 something page paper
+	with all the background then a description:
+	
+	https://www.google.com/search?rlz=1C1_____enUS447US447&sourceid=chrome&ie=UTF-8&q=kernel+principal+component+analysis#sclient=psy-ab&hl=en&rlz=1C1_____enUS447US447&source=hp&q=A+tutorial+on+Principal+Components+Analysis&pbx=1&oq=A+tutorial+on+Principal+Components+Analysis&aq=f&aqi=g2g-v1g-j1&aql=&gs_sm=e&gs_upl=11943l11943l2l12185l1l1l0l0l0l0l51l51l1l1l0&bav=on.2,or.r_gc.r_pw.r_cp.,cf.osb&fp=550374fd478a51e0&biw=784&bih=725
+	
+	- KPCA isn't much of stretch from there given it uses kernel's to do the projection. Still
+	a refresher on kernels might be good. I never fully memorized the kernel trick or any
+	of the derivations so I might need to just for my own sake.
+	
+	
+- I probably missed a lot. We'll learn as we go.
