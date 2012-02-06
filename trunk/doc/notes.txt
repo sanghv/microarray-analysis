@@ -100,5 +100,9 @@ semester for Senior Design which only worked on that.
 	a refresher on kernels might be good. I never fully memorized the kernel trick or any
 	of the derivations so I might need to just for my own sake.
 	
+
+- Preprocessing
+	- The first thing I want to do to the raw data is global mean normalization of the intensities. I uploaded a paper titled SNOMAD which is an online web interface (R statistical source code is downloadable for offline use also) which can do all of the preprocessing we'll need. This is great! We can learn some common preprocessing techniques and implement them ourselves if we really want or use the prewritten scripts for instant gratification.
+	- I haven't figured it all out yet though. :-\ ... How to use it that is.
 	
 - I probably missed a lot. We'll learn as we go.
