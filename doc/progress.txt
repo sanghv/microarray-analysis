@@ -2,3 +2,4 @@
 - Worked on Biplot stuff. 
 - I need to get a working sample of the biplot in R working with our sample data. It'll be a great start. We can then dissect the implementation and whatnot.
 - I need to polish up the proposal.
+- I prolly should take down some of the docs and just start a Mendely.
