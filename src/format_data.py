@@ -30,15 +30,18 @@ import os
 import csv
 import numpy as np
 
-UNFORMATTED_PATH  = "../data/colon tumor/raw unformatted data/"
-FORMATTED_PATH    = "../data/colon tumor/raw formatted data/"
-UNFORMATTED_INPUT = "I2000.txt"
-FORMATTED_OUTPUT  = "I2000.csv"
+UNFORMATTED_PATH         = "../data/colon tumor/raw unformatted data/"
+FORMATTED_PATH           = "../data/colon tumor/raw formatted data/"
+UNFORMATTED_I2000_INPUT  = "I2000.txt"
+FORMATTED_I2000_OUTPUT   = "I2000.csv"
+UNFORMATTED_TISSUE_INPUT = "tissues.txt"
+FORMATTED_TISSUE_OUTPUT  = "tissues.txt"
 SAMPLES_COUNT     = 62
 GENES_COUNT       = 2000
 
 # Initialize list of lists
 samples_list = [[]  for i in range(SAMPLES_COUNT)]
+tissue_list  = []
 
 
 
@@ -51,7 +54,7 @@ def check_paths():
 
 
 def read_raw_I2000():
-    I2000_file = open(UNFORMATTED_PATH + UNFORMATTED_INPUT,'r')
+    I2000_file = open(UNFORMATTED_PATH + UNFORMATTED_I2000_INPUT,'r')
     
     # Read in the I2000 gene expression samples
     while True:
@@ -80,18 +83,58 @@ def read_raw_I2000():
 
 def write_formatted_I2000():
     # Note: Write in binary mode so no extraneous new lines appear
-    writer =  csv.writer(open(FORMATTED_PATH + FORMATTED_OUTPUT, 'wb'))
+    writer =  csv.writer(open(FORMATTED_PATH + FORMATTED_I2000_OUTPUT, 'wb'))
     
     for s in range(len(samples_list)):
         writer.writerow(samples_list[s])
 
-    print "Success: I2000 comma seperated value file written"
+    print "Success: I2000 comma separated value file written"
 
 
-read_raw_I2000()
-write_formatted_I2000()
 
+def read_raw_tissues():
+    tissue_file = open(UNFORMATTED_PATH + UNFORMATTED_TISSUE_INPUT,'r')
+    
+    # Read in the I2000 gene expression samples
+    while True:
+        tissue_sample = tissue_file.readline()
+        
+        if not tissue_sample:
+            break
+        
+        # Handle whitespace
+        if not tissue_sample.strip():
+            continue
+        
+        # TODO: any error checking necessary?
+        tissue_value = np.int(tissue_sample)
+        
+        if (tissue_value >= 0):
+            tissue_list.append('+') # Sample came from a patient with a colon tumor
+        else:
+            tissue_list.append('-') # Sample came from a patient with a healthy colon
+            
+    print "Success: tissue file read in."
+    
+        
 
+def write_formatted_tissues():
+    tissue_file = open(FORMATTED_PATH + FORMATTED_TISSUE_OUTPUT, 'w')
+    
+    # Write each tissue sample on it's own line
+    for tissue_sample in tissue_list:
+        tissue_file.write(tissue_sample + "\n")
+        
+    print "Success: tissue file written"
+
+if __name__ == '__main__':    
+    check_paths()
+    
+    read_raw_I2000()
+    write_formatted_I2000()
+    
+    read_raw_tissues()
+    write_formatted_tissues()
 
 
 
