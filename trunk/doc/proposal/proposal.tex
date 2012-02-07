@@ -1,53 +1,49 @@
 \documentclass[10pt,a4,oneside]{report}
 % Margins were funky so I had to change them
-\usepackage[margin=1.0in]{geometry}
+\usepackage[margin=0.75in]{geometry}
 
 \begin{document}
+\section*{CAP 6545 Bioinformatics Proposal}
 
 % Set mood for the paper, dim the lights, put on Barry White
-The analysis of gene expression profiling provides not only a way of observing the cellular function in an organism but also an opportunity to observe the upregulation and downregulation of certain gene's in organisms with a disease  when compared to a healthy control group. Some of these tests can be done automatically but many of them are conducted as part of more meticulous  research via application of statistical and machine learning techniques.
+The analysis of gene expression profiling provides not only a way of observing the cellular function in an organism but also an opportunity to observe the upregulation and downregulation of certain gene's in organisms with a disease  when compared to a healthy control group. Some of these tests can be done automatically but many of them are conducted as part of more meticulous  research involving statistical and machine learning techniques.
 
 This is an area which has and is being actively explored. Consequently, this benefits us greatly and provides us with readily available data sources as well as published research papers which our results can be compared and contrasted to. This will allow our proposed group to explore a challenging problem (as there is no unanimously accepted way of carrying out research in this area) and with the extensions we propose later, further the knowledge in this area.
-
-% Project Member details
-The team members would consist of { \emph Albert Steppi}, {\emph Christopher Wolas}, and {\emph Michael Semeniuk}. Our justification for the extra group member is that it would allow for us not only implement the algorithm we will propose but also explore other data sets that are available and compare
-our work with others who have used these data sets for their own research.
 
 % Enough fluff, explain the selection of Problem
 The problem in which we would like to explore would be the repliciation and extension of the paper in the 2010 proceedings of the
 Genomics Proteonmics Bioinformatics Journal titled: "Mining Gene Expression Profiles: An Integrated Implementation of Kernel Principal
-Analysis and Singular Value Decomposition" [TODO: BIBTEX QUOTE].
+Analysis and Singular Value Decomposition" \cite{Reverter2010200}. This project would fall under the category of implementing a 'machine
+learning algorithm' and the paper publication date should be satisfactory.
 
 The paper implements a novel algorithm which the authors call KPCA-Biplot. This algorithm incorporates both Kernel Principal Component Analysis (KPCA) and Singular Value Decomposition Biplots (SVD-Biplot) in order to plot and analyze microarray samples and genes simulatenously and cluster the sample types visually. %NOTE: kind of awkward, if I time I should word this better
 
 Principal Component Analysis  allows the experimentor to identify similarity and differences in data which is a difficult problem especially in data of a high dimensionality. In the scope of this paper the patterns that are being unearthed are the similarity between genes and the data is microarray samples. PCA is also effective for dimensional reducation with loss of data equal to that of which the experimentor is willing to accept depending on the eigenvalue matrices ommited. This property is an important feature which will be utilized to create biplots.
 
-Singular value decomposition in the scope of this project allows a way of representing the data (microarray samples) and gene expression profiles in the same r-dimensional space. [TODO: Cite paper]
-
-%TODO: talk about their validation techniques if possible
+Singular value decomposition in the scope of this project allows a way of representing the data (microarray samples) and gene expression profiles in the same r-dimensional space \cite{Reverter2010200}.
 
 
 % Algorithm details TODO: Not done with this just look at paper to finish it
-The algorithm can be described as[TODO:BIBTEX QUOTE]: % NOTE: I'm quoting very close to the paper so we should reference the paper here.
+The algorithm can be described as \cite{Reverter2010200}: % NOTE: I'm quoting very close to the paper so we should reference the paper here.
 
 \begin{enumerate}  \itemsep -2pt % squeeze the numbers together. Way too much spacing for my liking
 \item
 % Added the first step since we'll have to do it
-Process raw gene expression data from dataset using microarray standardization and gene centering
+Preprocess gene expression data from dataset using techniques such as normalization and gene centering.
 \item 
-Perform standard SVD of processed gene expression data of the form: $\bf{X} = \bf{G}\bf{H}^{T}$
+Perform standard SVD of processed gene expression data of the form: $\bf{X} = \bf{G}\bf{H}^{T}$.
 \item
 Compute the kernel matrix, $\bf{K}$, from  the rows of H.
 \item
 Perform KPCA on the kernel matrix found above in order to extract the nonlinear features found in the gene expression data.
 % Added this step because I think it is implicit but is worth noting
 \item
-Select leading eigenvectors(?)
+Select leading eigenvectors.
 \item
 Project the rows of $\bf{G}$ onto the subspace of the chosen eigenvectors of $\bf{K}$.
 % Added this for clarity of what we do after projection
 \item
-Plot genes and microarray samples on centered biplot
+Plot genes and microarray samples on centered biplot.
 \end{enumerate}
 
 % Exposition of topic
@@ -60,7 +56,7 @@ profiles will not be linear and finding similarities in a higher dimensionality 
 
 % Software Details
 As the focal point of this project will be on the implementation of a machine learning algorithm, we believe the software details are relevant to include.
-At the current moment, Python will be the language of choice for implementation because of it's flexibility and ease at which it provides the capability
+At the current moment, Python will be the language of choice for implementation because of its flexibility and ease at which it provides the capability
 to rapidly prototype implementations. Any libraries from other languages can be easily wrapped and called in Python natively allowing for a pleasant
 software integration process.
 
@@ -68,14 +64,29 @@ software integration process.
 We also express interest in using the stastical language R for displaying our results. R will provide a way of creating elegant and professional visualizations. An interface between R and Python exists and will be explored. An alternative to R would be the widely available selection of visualization libraries that Python provides which may be explored.
 
 % Dataset and extensions
-The printed book "Computational Intelligence Methods for Bioinformatics and Biostatistics: 6th International Meeting" [TODO: BIBTEX QUOTE?] has kindly listed publically available datasets of gene expression profiles of individuals with various medical conditions as well as healthy control subjects. Datasets listed in this proceeding include the COLON dataset (colon tumors), LYMPHOMA dataset (3 lymphoid maligancy types), PROSTATE dataset (prostate tumors), ALL dataset (acute lymphoblastic leukemia), as well as several others. Initially we would like to work on the proposed datasets in the paper which are the COLON and ALL dataset. We wish to explore other datasets including but not limited to these for extensions to our research. Ideally, we would like to cross reference our results on any further explored datasets with research that has already been done them in order to compare or contrast the results we obtain.
+The conference article "Projection Based Clustering of Gene Expression Data" \cite{TasoulisPT09} has kindly listed publically available datasets of gene expression profiles of individuals with various medical conditions as well as healthy control subjects. Datasets listed in this proceeding include the COLON dataset (colon tumors), LYMPHOMA dataset (3 lymphoid maligancy types), PROSTATE dataset (prostate tumors), ALL dataset (acute lymphoblastic leukemia), as well as several others. Initially we would like to work on the proposed datasets in the paper which are the COLON and ALL dataset. We wish to explore other datasets including but not limited to these for extensions to our research. Ideally, we would like to cross reference our results on any further explored datasets with research that has already been done them in order to compare or contrast the results we obtain.
 
 % What we hope to analyze
 The analysis we will perform after our results be similar to the original paper referenced and we will be interpreting selected genes which appear to downregulated or upregulated. We will also be relating the meaning of the biplots and what they tell us about the data.
 
 % What we would like to expand on
-[TODO: hmm]
+[TODO: Write expansions]
 
+% Project Member details
+The team members would consist of { \emph Albert Steppi}, {\emph Christopher Wolas}, and {\emph Michael Semeniuk}. Our justification for the group selected is that the project is diverse enough so that each of the members can have a functional role:
+\begin{enumerate}  \itemsep -2pt % squeeze the numbers together. Way too much spacing for my liking
+\item
+{\bf Michael Semeniuk:} Implementation, Interfacing, Problem Specification
+\item
+{\bf Albert Steppi:} Mathematics and Statistical Methods
+\item
+{\bf Christopher Wolas:} Analysis, Results, Extensions
+\end{enumerate}
+
+
+% Would ideally like this to be on the same page as the proposal and not on a seperate page.
+\bibliographystyle{plain}		% (uses file "plain.bst")
+\bibliography{cited}		% expects file "cited.bib"
 
 \end{document}
 
