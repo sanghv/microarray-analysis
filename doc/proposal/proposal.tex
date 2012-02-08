@@ -3,6 +3,7 @@
 %% Edits: 
 %%	m.s. -- edited with crappy windoze
 %%	c.w. -- used editor of the beast VI VI VI
+%%   m.s. -- fixing chris' typos caused by not being able to fully harness the beast VI VI VI
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[10pt,a4,oneside]{report}
@@ -20,8 +21,7 @@ The research question that will be explored in our efforts is based on extending
 
 Principal Component Analysis allows the identification of similarities in high dimensional data. In the scope of their work, the author's used PCA to find correlations between genes and microarray samples. SVD was employed to find these similarities in the same n-dimensional space \cite{Reverter2010200}.
 
-% Algorithm details TODO: Not done with this just look at paper to finish it
-The algorithm can be described as \cite{Reverter2010200}: % NOTE: I'm quoting very close to the paper so we should reference the paper here.
+The algorithm can be described as \cite{Reverter2010200}:
 
 \begin{enumerate}  \itemsep -2pt % squeeze the numbers together. Way too much spacing for my liking
 \item
@@ -48,12 +48,12 @@ Within the literature, a mutlitude of machine learning techniques have been empl
 % Software Details
 The scope of our efforts will be to explore the author's novel technique on other datasets with the intention of getting similar results. The author's of, "Projection Based Clustering of Gene Expression Data" \cite{TasoulisPT09} have made their datasets publically available. The Reverter et al experiments considered only a subset of this data.
 
-The Dataset contains the gene expressions of individuals with medical conditions and healthy patients. As an overview the set includes the following: COLON dataset (colon tumors), LYMPHOMA dataset (3 lymphoid maligancy types), PROSTATE dataset (prostate tumors), ALL dataset (acute lymphoblastic leukemia.
+The Dataset contains the gene expressions of individuals with medical conditions and healthy patients. As an overview the set includes the following: COLON dataset (colon tumors), LYMPHOMA dataset (3 lymphoid maligancy types), PROSTATE dataset (prostate tumors), ALL dataset (acute lymphoblastic leukemia).
 
 The scope of our research efforts will be to analyze the remaining data sets with the novel KPCA technique purposed by Reverter et al. As a base line comparison, we propose to analyze the considered data sets using support vector machines. We feel this is a warranted approach since it makes use of the kernel trick, and it will allow for a better comparison between kernel based methods.
 
 % Project Member details
-The following breakdown justifies the group roles. Due to the size of the project, each member will be involved in implementing the techniques and researching the literature. Particular roles (as listed below) are assigned based on previous skills and education. Though, it is this groups intention for each individual to engage in all areas of the research as to learn about all the techniques. The breakdown of implementing the KPCA and SVN will be a distributed process.
+The following breakdown justifies the group roles. Due to the size of the project, each member will be involved in implementing the techniques and researching the literature. Particular roles (as listed below) are assigned based on previous skills and education. Though, it is this groups intention for each individual to engage in all areas of the research as to learn about all the techniques. The breakdown of implementing the KPCA and SVD will be a distributed process.
 \begin{enumerate}  \itemsep -2pt % squeeze the numbers together. Way too much spacing for my liking
 \item
 {\bf Michael Semeniuk:} Implementation, Problem Specification, and Bioinformatics approaches
@@ -63,6 +63,8 @@ The following breakdown justifies the group roles. Due to the size of the projec
 {\bf Christopher Wolas:} Implementation, Statistical Analysis, and Machine Learning  
 \end{enumerate}
 
+% We need to keep the \bibliographystyle... unless the bibliography doesn't display. At least for me...
+\bibliographystyle{plain}	% (uses file "plain.bst")
 \bibliography{cited}		% expects file "cited.bib"
 
 \end{document}
