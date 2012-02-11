@@ -1,0 +1,24 @@
+#
+#	Architecture document:
+#		Design and file layout go here.
+#		No wordy shit. Straight to the point.
+#
+#	Death TO facebook.
+#
+##################################################################
+
+Execution:
+	python main.py
+
+
+main.py
+	calls all functions. Everything necessary to run the code should be here.
+
+svd.py
+	svd code
+
+kpca.py
+	currently broken. Doesn't work
+
+format.py
+	formats output. Don't know where this should go
