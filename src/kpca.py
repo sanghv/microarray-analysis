@@ -2,6 +2,7 @@ print __doc__
 
 # Authors: Mathieu Blondel
 # License: BSD
+# Not only is it ugly, it doesn't work. Damn you Blondel
 
 import numpy as np
 import pylab as pl
