@@ -1,0 +1,101 @@
+\documentclass[serif ]{beamer}
+
+\title{Clustering Gene Expression Profile using Kernel Principal Component Analysis Biplots}
+\author{Michael Semeniuk, Albert Steppi, Christopher Wolas}
+\date{February 17th, 2012}
+
+\usepackage{graphicx}
+\usepackage{rotating}
+
+\begin{document}
+	\maketitle
+	
+	%\begin{frame}
+	%\frametitle{DNA Microarray Analysis}
+	%	...
+	%\end{frame}
+	
+	\begin{frame}
+		\frametitle{KPCA-Biplot}
+			Start with a Gene Expression Profile matrix $\mathbf{X}$:
+
+
+
+
+
+			% This is the crazy gene expression matrix with annotations
+			\begin{equation}			
+			\begin{matrix}
+                                % Column anotation
+			& & \text{Columns represent} & & \\
+			& & \text{gene expression intensities} & & \\
+			& & \rotatebox[origin=c]{270}{$\begin{cases} & \\  & \\ & \\ & \\ &  \\ & \\ &  \\  & \\ \end{cases}$} & & \\
+			% Gene expression Matrix 'X'
+			&\mathbf{X}=  
+			&       \begin{bmatrix}
+					x_{1,1} & x_{1,2} & x_{1,3} & \ldots  & x_{1,p} \\ 
+					x_{2,1} & x_{2,2} & x_{2,3} & \ldots  & x_{2,p} \\ 
+					x_{3,1} & x_{3,2} & x_{3,3} & \ldots  & x_{3,p} \\ 
+					\vdots   & \vdots   & \vdots   & \ddots  &              \\ 
+					x_{n,1} & x_{n,2} & x_{n,3} &            & x_{n,p} \\ 
+				\end{bmatrix}
+                                % Row Anotation
+			&\left.\begin{matrix}\\ \\ \\ \\ \\  \end{matrix}\right\}
+                                & \rotatebox[origin=c]{0}{$ \begin{matrix} 
+						                    \text{Rows}        \\
+							          \text{represent} \\ 
+							          \text{labeled}     \\
+							          \text{samples}    \\ 
+                                                                               \end{matrix}$} \\
+
+			\end{matrix}
+			\end{equation}
+
+	
+
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{KPCA-Biplot}
+			What are gene expression intensities? \newline
+			
+			- They are measurements of the activity of each gene\newline
+
+			What can they tell us?\newline
+			
+			- blah
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{KPCA-Biplot}
+		What are the labeled samples?
+	\end{frame}
+
+
+	\begin{frame}
+		\frametitle{KPCA-Biplot}
+		Next, perform preprocessing. \newline
+
+		What techniques do we have available?
+			\begin{enumerate}
+				\item Normalization (e.x. $log$ transformatio)
+				\item Gene Centering (subtract $\mu$ intensity of gene from each gene)
+				\item Gene Scaling (by standard deviation)
+				\item Filters
+					\begin{enumerate}
+						\item Simple threshold filters
+						\item Interquartile Range filters
+						\item ANOVA fitlers
+					\end{enumerate}
+				\item Sample Removal
+					\begin{enumerate}
+						\item Errorneous samples
+						\item Incomplete samples
+						\item Sample of a classification with not enough samples
+					\end{enumerate}
+			\end{enumerate}		
+
+	\end{frame}
+
+
+\end{document}
