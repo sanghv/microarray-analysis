@@ -1,27 +1,166 @@
+% Notes:
+% 
+% The process of decomposing a two-way table (matrix) into two component
+% matrices is called singular value decomposition (SVD), which is essentially the reverse process of
+% matrix multiplication (from GGE
+%
+%
+%
+%
+%
+
+
 \documentclass[serif ]{beamer}
+
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{etoolbox}
+
+
+% Decide if you want notes shown
+\newtoggle{useNotes}
+\toggletrue{useNotes}
+%\togglefalse{useNotes}
+
+\iftoggle{useNotes}
+{
+	\usepackage{pgfpages}
+	\setbeameroption{show notes on second screen}
+}
 
 \title{Clustering Gene Expression Profile using Kernel Principal Component Analysis Biplots}
 \author{Michael Semeniuk, Albert Steppi, Christopher Wolas}
 \date{February 17th, 2012}
 
-\usepackage{graphicx}
-\usepackage{rotating}
 
 \begin{document}
 	\maketitle
+
+	\note
+	{
+		Notes for this slide go here.
+	}
 	
-	%\begin{frame}
-	%\frametitle{DNA Microarray Analysis}
-	%	...
-	%\end{frame}
+	% I don't know what I want to say yet.
+	% http://www.ncbi.nlm.nih.gov/About/primer/microarrays.html
+	\begin{frame}
+	\frametitle{DNA Microarray Analysis}
+
+		Microarrays allow analysis DNA, cDna, or oligonucleotides.\newline
+
+		They can tell us:
+		\begin{enumerate}
+			\item Changes in Gene Expression Levels
+			\item Genomic Gains and Losses
+			\item Mutations in DNA
+		\end{enumerate}
+
+
+	\note
+	{
+		% Notes here
+	}
+	\end{frame}
 	
+	% TODO: SUPER HIGH LEVEL OVERVIEW OF KPCA BIPLOT
+	\begin{frame}
+		\frametitle{KPCA-Biplot}
+
+		This project can be broken up into several functional areas which will be pieced together in a coherent and useful fashion:
+
+		\begin{itemize}
+			\item Preprocessing and feature selection 
+			\item Principal Component Analysis (PCA)
+			\item Putting the 'Kernel' in Kernel Principal Component Analysis (KPCA)
+			\item Using biplots for analysis
+			\item Validation Methodology
+			\item Formulation of hypothesis from analysis results
+		\end{itemize} 
+
+		\note
+		{
+			Blah.
+		}
+
+	\end{frame}
+
+	\begin{frame} \frametitle{Biplot Primer} \begin{center} \structure{Biplots} \end{center} \end{frame}
+
+	% Quick definition of what a biplot is in addition to why you would want to use it
+	\begin{frame}
+		\frametitle{Biplot Primer}
+
+		Biplots are a type of {\bf exploratory} graph and a useful tool in {\bf exploratory data analysis}.
+
+	\note
+	{
+		In order to acquaint some of you with a possibility unfamiliar visualization, we've added a short interlude 
+		about  biplots. The following questions such as what biplots are, how to analyze them, and why one
+		use them in the first place are paramount and will be discussed.\newline
+		
+		Biplots are a type of exploratory graph. Exploratory data analysis is an important approach
+		that a statistician or data miner can use when presented with a data set. This can allow the
+		statistician to:
+
+		% http://en.wikipedia.org/wiki/Exploratory_data_analysis
+		\begin{enumerate}
+			\item Suggest hypotheses about the causes of observed phenomena
+			\item Assess assumptions on which statistical inference will be based
+			\item Support the selection of appropriate statistical tools and techniques
+		\end{enumerate}
+
+
+	}
+	\end{frame}
+
+% In progress	
+%	\begin{frame}
+%		\frametitle{Biplot Primer}
+%
+%		What hypothesis do we wish to make about difficult domain problems?
+%
+%		\note
+%		{
+%
+%		}
+%
+%	\end{frame}
+
+	% Some wikipedia interlude about John Tukey lol
+	\begin{frame}
+		\frametitle{Biplot Primer}
+		Mentality of the famous stastician, John Tukey:
+	
+		\begin{enumerate}
+			\item Visually examine your data set 
+			\item {\bf THEN } Formulate the hypothesis you wish to test
+		\end{enumerate}
+	\end{frame}
+
+	% When presented with a biplot how would you read it?
+	\begin{frame}
+		\frametitle{}
+		% Read Yan and Kang (2003) and provide an interpretation of how to read GE-Biplot
+		
+		% This is from The GE-Biplot for Microarray Data
+		Data more distant from the origin have greater variance and could mean either:
+		- greater differential expression
+		- outliers or defective data
+	
+	\end{frame}
+
+	% Enter the GE-Biplot, how we apply this concept to a domain-specific problem
+	\begin{frame}
+		\frametitle{}
+	\end{frame}
+	
+
+
+	% Walk our fellow classmates through KPCA-Biplots every step of the way
+	% Spare no detail, it's important that we teach them rather than just start blabbing in some kind of esoteric style
 	\begin{frame}
 		\frametitle{KPCA-Biplot}
 			Start with a Gene Expression Profile matrix $\mathbf{X}$:
-
-
-
-
 
 			% This is the crazy gene expression matrix with annotations
 			\begin{equation}			
@@ -57,18 +196,64 @@
 
 	\begin{frame}
 		\frametitle{KPCA-Biplot}
-			What are gene expression intensities? \newline
+			Gene expression intensities  are measurements of the activity of each gene.\newline
 			
-			- They are measurements of the activity of each gene\newline
-
-			What can they tell us?\newline
+			They can tell us:
 			
-			- blah
+			% WOW, this is super wordy. I want to say this more succinctly.
+			% Explain what a condition could be: Abnormality, Disease, Syndrome, identifiable trait(?)
+			\begin{enumerate}
+				\item Upregulation or downregulation of genes depending if certain condition is
+				         expressed.
+				\item Collectively, they can form gene expression profiles which can identify an
+				         indivdual with a condition.
+			\end{enumerate}
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{KPCA-Biplot}
-		What are the labeled samples?
+
+		In our research we've used {\bf 4} freely available datasets with labeled samples:
+
+		% http://icos.cs.nott.ac.uk/datasets/microarray.html
+		% http://www.inf.ed.ac.uk/teaching/courses/dme/html/datasets0405.html
+		\begin{enumerate}
+			\item {\bf COLON dataset}: 
+				\begin{itemize}
+					\item  $ Labels = \left \{ \text{Tumor}, \text{No Tumor}  \right \}$
+					\item 2,000 gene expression levels, 62 samples
+				\end{itemize}
+			\item {\bf LYMPHOMA dataset}: 
+				\begin{itemize}
+					\item  $ Labels = 
+						\left \{ \text{DLBCL}\footnote{Diffuse large B-cell lymphoma},
+							 \text{FL}\footnote{Follicular lymphoma}  \right \}$
+					\item 6,817 gene expression levels, 77 samples % DLBCL (n = 58) and FL (n = 19)
+				\end{itemize}
+			\item {\bf PROSTATE dataset}:
+				\begin{itemize}
+					\item  $ Labels = \left \{ \text{Tumor}, \text{No Tumor}  \right \}$
+					\item 2,135 gene expression levels, 77 samples % Tumor (n = 52) and No Tumor (n = 50)
+				\end{itemize}
+			% http://www.biolab.si/supp/bi-cancer/projections/info/leukemia.htm
+			\item {\bf Leukemia dataset }:
+					\begin{itemize}
+					\item  $ Labels = 	\left
+						 \{ \text{ALL}\footnote{Acute lymphoblastic leukemia},
+						 \text{AML}\footnote{Acute myeloid leukemia}
+								 \right \}$
+					\item 5,147 gene expression levels, 72 samples % ALL (n = 47) and AML (n = 25)
+				\end{itemize}
+		\end{enumerate}
+
+
+		\note
+		{
+
+			What are our labeled samples?\newline
+		}		
+		
+
 	\end{frame}
 
 
@@ -76,7 +261,7 @@
 		\frametitle{KPCA-Biplot}
 		Next, perform preprocessing. \newline
 
-		What techniques do we have available?
+		Several established techniques are as follows:
 			\begin{enumerate}
 				\item Normalization (e.x. $log$ transformatio)
 				\item Gene Centering (subtract $\mu$ intensity of gene from each gene)
@@ -95,6 +280,18 @@
 					\end{enumerate}
 			\end{enumerate}		
 
+		\note
+		{
+
+		}
+
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{KPCA-Biplot}
+
+		SVD Slide.
+				
 	\end{frame}
 
 
