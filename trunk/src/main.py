@@ -1,6 +1,6 @@
 # Import the modules which will run both svd and kpca samples
 import svd
-#import kpca # This looks like it has some issues going on.
+import kpca
 
 # stub until code goes here
 def main():
