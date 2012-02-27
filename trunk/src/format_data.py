@@ -329,10 +329,131 @@ class LymphomaDataSet(DataSet):
         return True
 
 
+class ProstateDataSet(DataSet):
+
+    name = "Prostate Data Set"
+
+    UNFORMATTED_PATH         = "../data/PROSTATE/raw preprocessed data/"
+    FORMATTED_PATH           = "../data/PROSTATE/formatted preprocessed data/"
+
+    UNFORMATTED_DATASET_INPUT  = "dataset.txt" # contains genes, samples, and classification
+    FORMATTED_PROFILE_OUTPUT = "expression_profiles.csv"  # contains genes and samples
+    FORMATTED_CLASSIFICATION_OUTPUT = "classification.txt" # contains list of classifications
+    FORMATTED_GENE_OUTPUT = "genes.txt" # contains list of genes
+
+    SAMPLES_COUNT = 102
+    GENES_COUNT   = 2135
+
+    def __init__(self):
+        # Initialize list of lists to be used for reading and writing
+        self.expression_profiles = [[]  for i in range(self.SAMPLES_COUNT)]
+        self.classification_profiles = []
+        self.gene_list = []
+
+    def verify(self):
+        unformatted_path_exists = os.path.exists(self.UNFORMATTED_PATH)
+        assert unformatted_path_exists, "Error: " + self.UNFORMATTED_PATH + " does not exist!"
+
+        formatted_path_exists = os.path.exists(self.FORMATTED_PATH)
+        assert formatted_path_exists, "Error: " + self.FORMATTED_PATH + " does not exist!"
+
+        return unformatted_path_exists and formatted_path_exists
+
+    def read(self):
+        dataset_file = open(self.UNFORMATTED_PATH + self.UNFORMATTED_DATASET_INPUT,'r')
+
+        # Read in the gene expression profiles
+        # NOTE: Format is:
+        # <Gene Name_{1}> <Samples_{1 .. SAMPLES_COUNT}>
+        # ...
+        # <Gene Name_{GENES_COUNT}> <Samples_{1 .. SAMPLES_COUNT}>
+        # <ysingh> <CLASSIFICATION_{1 .. SAMPLES_COUNT} where 0 = {?} and 1 = {?}>
+        while True:
+            line = dataset_file.readline()
+
+            if not line:
+                break
+
+            # Handle whitespace
+            if not line.strip():
+                continue
+
+            # Read classifications
+            if line.startswith("ysingh"):
+                classifications = line.split()
+
+                correct_classifications_len = len(classifications) == self.SAMPLES_COUNT + 1
+                assert correct_classifications_len, "Error: Data should have " + str(self.SAMPLES_COUNT) +\
+                                                    " classifications!"
+                # remove identifier "ydlbcl" from the list
+                del classifications[0]
+
+                self.classification_profiles += classifications
+
+                continue
+                # Else, read gene intensities for single gene
+            gene_intensity_samples = line.split()
+
+            correct_sample_len = len(gene_intensity_samples) == self.SAMPLES_COUNT + 1
+            assert correct_sample_len, "Error: Data should have " + str(self.SAMPLES_COUNT) +\
+                                       " samples per gene entry!"
+
+            # remove gene name from the list
+            gene_name = gene_intensity_samples[0]
+            del gene_intensity_samples[0]
+            self.gene_list.append(gene_name)
+
+            for s in range(len(gene_intensity_samples)):
+                self.expression_profiles[s].append(np.double(gene_intensity_samples[s]))
+
+        # Verify data was formatted as expected, namely, <GENES_COUNT> genes per sample
+        for s in range(self.SAMPLES_COUNT):
+            correct_gene_len = len(self.expression_profiles[s]) == self.GENES_COUNT
+            assert correct_gene_len, "Error: Sample " + str(s) + " has " + str(len(self.expression_profiles[s])) +\
+                                     " genes instead of " + str(self.GENES_COUNT)
+
+        # Verify gene list has correct amount of genes
+        correct_gene_list_len = len(self.gene_list) == self.GENES_COUNT
+        assert correct_gene_list_len, "Error: Gene list has" + str(len(self.gene_list)) + " genes" +\
+                                      "instead of " + str(self.GENES_COUNT)
+
+        # Verify classification has correct amount of samples
+        correct_classifications_len = len(self.classification_profiles) == self.GENES_COUNT
+        assert correct_gene_list_len, "Error: Gene list has" + str(len(self.classification_profiles)) +\
+                                      " classifications" +"instead of " + str(self.GENES_COUNT)
+
+        print "Success: dataset, gene names, and classifications read in"
+        return True
+
+    def write(self):
+        # Note: Write in binary mode so no extraneous new lines appear
+        gene_expression_writer =  csv.writer(open(self.FORMATTED_PATH + self.FORMATTED_PROFILE_OUTPUT, 'wb'))
+
+        for s in range(len(self.expression_profiles)):
+            gene_expression_writer.writerow(self.expression_profiles[s])
+
+
+        gene_file = open(self.FORMATTED_PATH + self.FORMATTED_GENE_OUTPUT, 'w')
+
+        # Write each gene name on its own line
+        for gene in self.gene_list:
+            gene_file.write(gene + "\n")
+
+
+        classification_file = open(self.FORMATTED_PATH + self.FORMATTED_CLASSIFICATION_OUTPUT, 'w')
+
+        # Write each classification sample on its own line
+        for classification_sample in self.classification_profiles:
+            classification_file.write(classification_sample + "\n")
+
+        print "Success: Gene expression profile, classifications, and gene names written"
+        return True
+
+
 
 if __name__ == '__main__':
 
-    datasets = [TumorDataSet(), LymphomaDataSet()]
+    datasets = [TumorDataSet(), LymphomaDataSet(), ProstateDataSet()]
 
     for i in range(len(datasets)):
         print "Dataset: " + datasets[i].name + "\n"
