@@ -1,31 +1,3 @@
-'''
-Format the data in a format that corresponds with the algorithm we
-will be implementing
-'''
-
-'''
-"Let X be the preprocessed gene expression data matrix, with n microarray samples
-in the rows and p variable genes in the columns."
-
-Our data should be stored as:
-
-        0        1        2        ...        p
-        
-0       x_{0,0}  x_{0,1}  x_{0,2}             x_{0,p}
-1       x_{1,0}  x_{1,1}  x_{1,2}             x_{1,p}  
-...     
-n       x_{n,0}  x_{n,1}  x_{n,2}             x_{n,p}
-
-
-The gene number will be unique labeled 0 to p. A corresponding data structure
-will be created to look up what gene the columns represent.
-'''
-
-'''
-Matrix G is an n x r matrix representing microarray samples
-Matrix H is an p x r matrix representing variable gene effects
-'''
-
 import os
 import csv
 import numpy as np
@@ -40,6 +12,10 @@ KPCA-Biplot application.
 class DataSet:
 
     name = "Dataset" # Override this
+
+    expression_profiles = None
+    classification_profiles = None
+    gene_list = None
 
     def verify(self):
         pass
@@ -56,24 +32,27 @@ class TumorDataSet(DataSet):
     '''
     Data set constants
     '''
-    UNFORMATTED_PATH         = "../data/colon tumor/raw unformatted data/"
-    FORMATTED_PATH           = "../data/colon tumor/raw formatted data/"
-    UNFORMATTED_I2000_INPUT  = "I2000.txt"
-    FORMATTED_I2000_OUTPUT   = "I2000.csv"
-    UNFORMATTED_TISSUE_INPUT = "tissues.txt"
-    FORMATTED_TISSUE_OUTPUT  = "tissues.txt"
+    UNFORMATTED_PATH         = "../data/COLON/raw unformatted data/"
+    FORMATTED_PATH           = "../data/COLON/raw formatted data/"
+
+    UNFORMATTED_I2000_INPUT  = "I2000.txt" # contains gene expression profiles
+    UNFORMATTED_TISSUE_INPUT = "tissues.txt" # contains classifications
+    UNFORMATTED_GENES_INPUT  = "names.txt" # contains gene names
+
+    FORMATTED_PROFILE_OUTPUT = "expression_profiles.csv"  # contains genes and samples
+    FORMATTED_CLASSIFICATION_OUTPUT = "classification.txt" # contains list of classifications
+    FORMATTED_GENE_OUTPUT = "genes.txt" # contains list of genes
+
     SAMPLES_COUNT     = 62
     GENES_COUNT       = 2000
 
     name = "Tumor Data Set"
 
-    samples_list = None
-    tissue_list  = None
-
     def __init__(self):
         # Initialize list of lists to be used for reading and writing
-        self.samples_list = [[]  for i in range(self.SAMPLES_COUNT)]
-        self.tissue_list  = []
+        self.expression_profiles = [[]  for i in range(self.SAMPLES_COUNT)]
+        self.classification_profiles  = []
+        self.gene_list = []
 
     def verify(self):
         unformatted_path_exists = os.path.exists(self.UNFORMATTED_PATH)
@@ -85,12 +64,13 @@ class TumorDataSet(DataSet):
         return unformatted_path_exists and formatted_path_exists
 
     def read(self):
-        I2000_read_was_success  = self.read_raw_I2000()
-        tissue_read_was_success = self.read_raw_tissues()
+        I2000_read_was_success  = self.read_I2000()
+        tissue_read_was_success = self.read_tissues()
+        gene_read_was_success   = self.read_genes()
 
-        return I2000_read_was_success and tissue_read_was_success
+        return I2000_read_was_success and tissue_read_was_success and gene_read_was_success
 
-    def read_raw_I2000(self):
+    def read_I2000(self):
         I2000_file = open(self.UNFORMATTED_PATH + self.UNFORMATTED_I2000_INPUT,'r')
 
         # Read in the I2000 gene expression samples
@@ -106,24 +86,24 @@ class TumorDataSet(DataSet):
 
             single_gene_col = line.split()
 
-            #TODO DONT USE ACTUAL NUMBERS, USE VARIABLES
-            correct_sample_len = len(single_gene_col) == 62
-            assert correct_sample_len, "Error: Data should have 62 samples per gene entry!"
+            #TODO DON'T USE ACTUAL NUMBERS, USE VARIABLES
+            correct_sample_len = len(single_gene_col) == self.SAMPLES_COUNT
+            assert correct_sample_len, "Error: Data should have " + str(self.SAMPLES_COUNT) + \
+                                       " samples per gene entry!"
 
             for s in range(len(single_gene_col)):
-                self.samples_list[s].append(np.double(single_gene_col[s]))
+                self.expression_profiles[s].append(np.double(single_gene_col[s]))
 
         # Verify data was formatted as expected, namely, 2000 genes per sample
         for s in range(self.SAMPLES_COUNT):
-            correct_gene_len = len(self.samples_list[s]) == self.GENES_COUNT
-            assert correct_gene_len, "Error: Sample " + str(s) + " has " + str(len(self.samples_list[s])) + \
+            correct_gene_len = len(self.expression_profiles[s]) == self.GENES_COUNT
+            assert correct_gene_len, "Error: Sample " + str(s) + " has " + str(len(self.expression_profiles[s])) + \
                                      " genes instead of " + str(self.GENES_COUNT)
 
         print "Success: I2000 file read in."
         return True
 
-
-    def read_raw_tissues(self):
+    def read_tissues(self):
         tissue_file = open(self.UNFORMATTED_PATH + self.UNFORMATTED_TISSUE_INPUT,'r')
 
         # Read in the tissue classifications
@@ -141,39 +121,87 @@ class TumorDataSet(DataSet):
             tissue_value = np.int(tissue_sample)
 
             if tissue_value >= 0:
-                self.tissue_list.append('+') # Sample came from a patient with a colon tumor
+                self.classification_profiles.append('+') # Sample came from a patient with a colon tumor
             else:
-                self.tissue_list.append('-') # Sample came from a patient with a healthy colon
+                self.classification_profiles.append('-') # Sample came from a patient with a healthy colon
 
         print "Success: tissue file read in."
         return True
 
+    def read_genes(self):
+        gene_file = open(self.UNFORMATTED_PATH + self.UNFORMATTED_GENES_INPUT,'r')
 
-    def write(self):
-        I2000_write_was_success  = self.write_formatted_I2000()
-        tissue_write_was_success = self.write_formatted_tissues()
+        # Read in the tissue classifications
+        while True:
+            gene = gene_file.readline()
 
-        return I2000_write_was_success and tissue_write_was_success
+            if not gene:
+                break
+
+            # Handle whitespace
+            if not gene.strip():
+                continue
+
+            gene_info = gene.split()
+
+            GENE_ALT_INDEX = 0
+            GENE_INDEX     = 1
+            assert len(gene_info) > 1, "Error: not enough fields in gene_info"
+            gene_name = gene_info[GENE_INDEX]
+
+            if gene_name.upper() == "CONTROL":
+                gene_name = gene_info[GENE_ALT_INDEX]
+                self.gene_list.append(gene_name)
+            else:
+                assert len(gene_name) > 1, "Error: not enough chars in gene name"
+                assert gene_name[0].isalpha(), "Error: not in the correct format, " + gene_name
+                assert gene_name[1:].isdigit(), "Error: not in the correct format, " + gene_name
+
+                self.gene_list.append(gene_name)
 
 
-    def write_formatted_I2000(self):
-        # Note: Write in binary mode so no extraneous new lines appear
-        writer =  csv.writer(open(self.FORMATTED_PATH + self.FORMATTED_I2000_OUTPUT, 'wb'))
-
-        for s in range(len(self.samples_list)):
-            writer.writerow(self.samples_list[s])
-
-        print "Success: I2000 comma separated value file written"
+        print "Success: gene file read in."
         return True
 
-    def write_formatted_tissues(self):
-        tissue_file = open(self.FORMATTED_PATH + self.FORMATTED_TISSUE_OUTPUT, 'w')
+
+    def write(self):
+        expression_write_was_success     = self.write_expression_profile()
+        classification_write_was_success = self.write_classifications()
+        gene_write_was_success           = self.write_genes()
+
+        return expression_write_was_success and classification_write_was_success and gene_write_was_success
+
+    def write_expression_profile(self):
+        assert len(self.expression_profiles) == self.SAMPLES_COUNT, "Error: profile count differs from expected"
+        # Note: Write in binary mode so no extraneous new lines appear
+        expression_writer =  csv.writer(open(self.FORMATTED_PATH + self.FORMATTED_PROFILE_OUTPUT, 'wb'))
+
+        for s in range(len(self.expression_profiles)):
+            expression_writer.writerow(self.expression_profiles[s])
+
+        print "Success: gene expression file written"
+        return True
+
+    def write_classifications(self):
+        assert len(self.classification_profiles) == self.SAMPLES_COUNT, "Error: Sample count differs from expected"
+        classification_file = open(self.FORMATTED_PATH + self.FORMATTED_CLASSIFICATION_OUTPUT, 'w')
 
         # Write each tissue sample on it's own line
-        for tissue_sample in self.tissue_list:
-            tissue_file.write(tissue_sample + "\n")
+        for classification_sample in self.classification_profiles:
+            classification_file.write(classification_sample + "\n")
 
-        print "Success: tissue file written"
+        print "Success: classification file written"
+        return True
+
+    def write_genes(self):
+        assert len(self.gene_list) == self.GENES_COUNT, "Error: Gene count differs from expected"
+        gene_file = open(self.FORMATTED_PATH + self.FORMATTED_GENE_OUTPUT, 'w')
+
+        # Write each tissue sample on it's own line
+        for gene in self.gene_list:
+            gene_file.write(gene + "\n")
+
+        print "Success: gene file written"
         return True
 
 
@@ -191,11 +219,6 @@ class LymphomaDataSet(DataSet):
 
     SAMPLES_COUNT = 77
     GENES_COUNT   = 2647 # Page says 7129 though, even though there data set only has 2647
-
-
-    expression_profiles = None
-    classification_profiles = None
-    gene_list = None
 
     def __init__(self):
         # Initialize list of lists to be used for reading and writing
