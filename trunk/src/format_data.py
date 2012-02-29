@@ -1,7 +1,7 @@
 import os
 import csv
 import numpy as np
-
+from operator import itemgetter
 
 '''
 Dataset
@@ -32,8 +32,8 @@ class TumorDataSet(DataSet):
     '''
     Data set constants
     '''
-    UNFORMATTED_PATH         = "../data/COLON/raw unformatted data/"
-    FORMATTED_PATH           = "../data/COLON/raw formatted data/"
+    UNFORMATTED_PATH         = "../data/COLON/unformatted/"
+    FORMATTED_PATH           = "../data/COLON/formatted/"
 
     UNFORMATTED_I2000_INPUT  = "I2000.txt" # contains gene expression profiles
     UNFORMATTED_TISSUE_INPUT = "tissues.txt" # contains classifications
@@ -209,8 +209,8 @@ class LymphomaDataSet(DataSet):
 
     name = "Lymphoma Data Set"
 
-    UNFORMATTED_PATH         = "../data/LYMPHOMA/raw preprocessed data/"
-    FORMATTED_PATH           = "../data/LYMPHOMA/formatted preprocessed data/"
+    UNFORMATTED_PATH         = "../data/LYMPHOMA/unformatted/"
+    FORMATTED_PATH           = "../data/LYMPHOMA/formatted/"
 
     UNFORMATTED_DATASET_INPUT  = "dataset.txt" # contains genes, samples, and classification
     FORMATTED_PROFILE_OUTPUT = "expression_profiles.csv"  # contains genes and samples
@@ -333,8 +333,8 @@ class ProstateDataSet(DataSet):
 
     name = "Prostate Data Set"
 
-    UNFORMATTED_PATH         = "../data/PROSTATE/raw preprocessed data/"
-    FORMATTED_PATH           = "../data/PROSTATE/formatted preprocessed data/"
+    UNFORMATTED_PATH         = "../data/PROSTATE/unformatted/"
+    FORMATTED_PATH           = "../data/PROSTATE/formatted/"
 
     UNFORMATTED_DATASET_INPUT  = "dataset.txt" # contains genes, samples, and classification
     FORMATTED_PROFILE_OUTPUT = "expression_profiles.csv"  # contains genes and samples
@@ -450,10 +450,305 @@ class ProstateDataSet(DataSet):
         return True
 
 
+class LeukemiaDataSet(DataSet):
+
+    '''
+    Data set constants
+    '''
+    UNFORMATTED_PATH         = "../data/LEUKEMIA/unformatted/"
+    FORMATTED_PATH           = "../data/LEUKEMIA/formatted/"
+
+    UNFORMATTED_TEST_DATA_INPUT           = "golub.test"
+    UNFORMATTED_TEST_CLASSIFICATION_INPUT = "golub.test.pheno"
+
+    UNFORMATTED_TRAIN_DATA_INPUT           = "golub.train"
+    UNFORMATTED_TRAIN_CLASSIFICATION_INPUT = "golub.train.pheno"
+
+    FORMATTED_PROFILE_OUTPUT = "expression_profiles.csv"  # contains genes and samples
+    FORMATTED_CLASSIFICATION_OUTPUT = "classification.txt" # contains list of classifications
+    FORMATTED_GENE_OUTPUT = "genes.txt" # contains list of genes
+
+    SAMPLES_TRAIN_COUNT = 38
+    SAMPLES_TEST_COUNT  = 34
+    SAMPLES_TOTAL_COUNT = SAMPLES_TRAIN_COUNT + SAMPLES_TEST_COUNT
+    GENES_COUNT       = 7129
+
+    name = "Leukemia Data Set"
+    expression_train_profiles = None
+    expression_test_profiles  = None
+    verification_gene_list    = None
+    test_classifications      = None
+    train_classifications     = None
+
+    def __init__(self):
+        # Initialize list of lists to be used for reading and writing
+
+        #self.expression_profiles = [[]  for i in range(self.SAMPLES_TOTAL_COUNT)]
+        self.expression_train_profiles = [[]  for i in range(self.SAMPLES_TRAIN_COUNT)]
+        self.expression_test_profiles  = [[]  for i in range(self.SAMPLES_TEST_COUNT)]
+
+        self.test_classifications     = {} # dictionary because the labeled samples are out of order
+        self.train_classifications    = {} # dictionary because the labeled samples are out of order
+        self.classification_profiles  = [] # they will be sorted into this list
+
+        self.gene_list = []
+        self.verification_gene_list = [] # Since we have to read the gene list twice, why not verify they're the same
+
+
+    def verify(self):
+        unformatted_path_exists = os.path.exists(self.UNFORMATTED_PATH)
+        assert unformatted_path_exists, "Error: " + self.UNFORMATTED_PATH + " does not exist!"
+
+        formatted_path_exists = os.path.exists(self.FORMATTED_PATH)
+        assert formatted_path_exists, "Error: " + self.FORMATTED_PATH + " does not exist!"
+
+        return unformatted_path_exists and formatted_path_exists
+
+    def read(self):
+        train_read_was_success = self.read_train()
+        test_read_was_success  = self.read_test()
+        train_class_read_was_success = self.read_train_classifications()
+        test_class_read_was_success  = self.read_test_classifications()
+
+        return train_read_was_success and test_read_was_success and \
+               train_class_read_was_success and test_class_read_was_success
+
+    def read_train_classifications(self):
+        dataset_file = open(self.UNFORMATTED_PATH + self.UNFORMATTED_TRAIN_CLASSIFICATION_INPUT,'r')
+
+        # Read in the gene expression profiles
+        # NOTE: Format is:
+        # <Sample_{index=start}>..<Sample_{index=end}>
+        # <Sample Number> <Classification> <Other Stuff>
+        # ...
+        while True:
+            line = dataset_file.readline()
+
+            if not line:
+                break
+
+            # Handle whitespace
+            if not line.strip():
+                continue
+
+            # Skip headers
+            if line.startswith("Samples"):
+                continue
+
+            # Else, read gene intensities for single gene
+            labeled_sample = line.split()
+
+            assert len(labeled_sample) == 11, "Error: Sample fields differ from expected"
+
+            sample_num = np.int(labeled_sample[0])
+            sample_classification = labeled_sample[1]
+
+            assert not self.train_classifications.has_key(sample_num), "Error: duplicate key values"
+
+            self.train_classifications[sample_num] = sample_classification
+
+
+        assert len(self.train_classifications) == self.SAMPLES_TRAIN_COUNT, "Error: Incorrect amount of samples read"
+
+        print "Success: Train classifications read in successfully"
+        return True
+
+    def read_test_classifications(self):
+        dataset_file = open(self.UNFORMATTED_PATH + self.UNFORMATTED_TEST_CLASSIFICATION_INPUT,'r')
+
+        # Read in the gene expression profiles
+        # NOTE: Format is:
+        # <Sample_{index=start}>..<Sample_{index=end}>
+        # <Sample Number> <Classification> <Other Stuff>
+        # ...
+        while True:
+            line = dataset_file.readline()
+
+            if not line:
+                break
+
+            # Handle whitespace
+            if not line.strip():
+                continue
+
+            # Skip headers
+            if line.startswith("Samples"):
+                continue
+
+            # Else, read gene intensities for single gene
+            labeled_sample = line.split()
+
+            assert len(labeled_sample) == 11, "Error: Sample fields differ from expected"
+
+            sample_num = np.int(labeled_sample[0])
+            sample_classification = labeled_sample[1]
+
+            assert not self.test_classifications.has_key(sample_num), "Error: duplicate key values"
+
+            self.test_classifications[sample_num] = sample_classification
+
+
+        assert len(self.test_classifications) == self.SAMPLES_TEST_COUNT, "Error: Incorrect amount of samples read"
+
+        print "Success: Test classifications read in successfully"
+        return True
+
+
+    '''
+    THIS IS READ IN FIRST
+    '''
+    def read_train(self):
+        dataset_file = open(self.UNFORMATTED_PATH + self.UNFORMATTED_TRAIN_DATA_INPUT,'r')
+
+        # TODO UPDATE COMMENT V V V
+        # Read in the gene expression profiles
+        # NOTE: Format is:
+        # <Sample_{index=start}>..<Sample_{index=end}>
+        # <Gene Name_{1}> <Samples_{1 .. SAMPLES_COUNT}>
+        # ...
+        # <Gene Name_{GENES_COUNT}> <Samples_{1 .. SAMPLES_COUNT}>
+        while True:
+            line = dataset_file.readline()
+
+            if not line:
+                break
+
+            # Handle whitespace
+            if not line.strip():
+                continue
+
+            # Skip sample number indices line since they're already in order
+            if line.startswith("X1 X2"):
+                continue
+
+            # Else, read gene intensities for single gene
+            gene_intensity_samples = line.split()
+
+            correct_sample_len = len(gene_intensity_samples) == self.SAMPLES_TRAIN_COUNT + 1
+            assert correct_sample_len, "Error: Train Data should have " + str(self.SAMPLES_TRAIN_COUNT) +\
+                                       " samples per gene entry!"
+
+            # remove gene name from the list
+            gene_name = gene_intensity_samples[0]
+            del gene_intensity_samples[0]
+
+            if len(self.gene_list) < self.GENES_COUNT:
+                self.gene_list.append(gene_name)
+
+            for s in range(len(gene_intensity_samples)):
+                self.expression_train_profiles[s].append(np.double(gene_intensity_samples[s]))
+
+        # Verify data was formatted as expected, namely, <GENES_COUNT> genes per sample
+        for s in range(self.SAMPLES_TRAIN_COUNT):
+            correct_gene_len = len(self.expression_train_profiles[s]) == self.GENES_COUNT
+            assert correct_gene_len, "Error: Sample " + str(s) + " has " + \
+                                     str(len(self.expression_train_profiles[s])) + \
+                                     " genes instead of " + str(self.GENES_COUNT)
+
+        # Verify gene list has correct amount of genes
+        correct_gene_list_len = len(self.gene_list) == self.GENES_COUNT
+        assert correct_gene_list_len, "Error: Gene list has" + str(len(self.gene_list)) + " genes" +\
+                                      "instead of " + str(self.GENES_COUNT)
+
+        print "Success: Train data and genes successfully read in"
+        return True
+
+
+
+    '''
+    This is read in SECOND
+    '''
+    def read_test(self):
+        dataset_file = open(self.UNFORMATTED_PATH + self.UNFORMATTED_TEST_DATA_INPUT,'r')
+
+        # TODO UPDATE COMMENT V V V
+        # Read in the gene expression profiles
+        # NOTE: Format is:
+        # <Gene Name_{1}> <Samples_{1 .. SAMPLES_COUNT}>
+        # ...
+        # <Gene Name_{GENES_COUNT}> <Samples_{1 .. SAMPLES_COUNT}>
+        while True:
+            line = dataset_file.readline()
+
+            if not line:
+                break
+
+            # Handle whitespace
+            if not line.strip():
+                continue
+
+            # Skip sample number indices line since they're already in order
+            if line.startswith("X1 X2"):
+                continue
+
+            # Else, read gene intensities for single gene
+            gene_intensity_samples = line.split()
+
+            correct_sample_len = len(gene_intensity_samples) == self.SAMPLES_TEST_COUNT + 1
+            assert correct_sample_len, "Error: Test Data should have " + str(self.SAMPLES_TEST_COUNT) +\
+                                       " samples per gene entry!"
+
+            # remove gene name from the list
+            gene_name = gene_intensity_samples[0]
+            del gene_intensity_samples[0]
+
+            if len(self.verification_gene_list) < self.GENES_COUNT:
+                self.verification_gene_list.append(gene_name)
+
+            for s in range(len(gene_intensity_samples)):
+                self.expression_test_profiles[s].append(np.double(gene_intensity_samples[s]))
+
+        # Verify data was formatted as expected, namely, <GENES_COUNT> genes per sample
+        for s in range(self.SAMPLES_TEST_COUNT):
+            correct_gene_len = len(self.expression_test_profiles[s]) == self.GENES_COUNT
+            assert correct_gene_len, "Error: Sample " + str(s) + " has " +\
+                                     str(len(self.expression_test_profiles[s])) +\
+                                     " genes instead of " + str(self.GENES_COUNT)
+
+
+        # Verify gene list and verification gene list are the same
+        assert len(self.gene_list) == len(self.verification_gene_list), "Error: Gene lengths differ between " + \
+                                                                        "test and training data set"
+        assert self.gene_list == self.verification_gene_list, "Error: Test and train data set contain different " + \
+                                                              "genes"
+
+        print "Success: Test data and genes successfully verified"
+        return True
+
+
+    def write(self):
+        # Note: Write in binary mode so no extraneous new lines appear
+        gene_expression_writer =  csv.writer(open(self.FORMATTED_PATH + self.FORMATTED_PROFILE_OUTPUT, 'wb'))
+
+        # NOTE: BE CONSISTENT! COMBINE TRAIN DATA THEN TEST DATA
+
+        # Combine test and train profiles
+        self.expression_profiles = self.expression_train_profiles + self.expression_test_profiles
+
+        for s in range(len(self.expression_profiles)):
+            gene_expression_writer.writerow(self.expression_profiles[s])
+
+
+        classification_file = open(self.FORMATTED_PATH + self.FORMATTED_CLASSIFICATION_OUTPUT, 'w')
+
+        classification_file = open(self.FORMATTED_PATH + self.FORMATTED_CLASSIFICATION_OUTPUT, 'w')
+        self.classification_profiles = sorted(self.test_classifications.items() +  self.train_classifications.items(), \
+                                              key=itemgetter(0))
+        self.classification_profiles = [value for key,value in self.classification_profiles] # get values from tuples
+
+        # Write each tissue sample on it's own line
+        for classification_item in self.classification_profiles:
+            classification_file.write(classification_item + "\n")
+
+        print "Success! Gene classifications and expression profiles written"
+
+        return True
+
+
 
 if __name__ == '__main__':
 
-    datasets = [TumorDataSet(), LymphomaDataSet(), ProstateDataSet()]
+    datasets = [TumorDataSet(), LymphomaDataSet(), ProstateDataSet(), LeukemiaDataSet()]
 
     for i in range(len(datasets)):
         print "Dataset: " + datasets[i].name + "\n"
