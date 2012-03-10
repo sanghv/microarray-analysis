@@ -29,7 +29,6 @@ kpca.tumor.data <- our.kpca(tumor.data, kernel = "rbfdot",
 # projected onto the principal components. 
 
 # The kpca biplot from Reverter, Vegas, and Sanchez.
-# Doesn't work as expected yet.
 pdf("kpca-biplot.pdf")
 kpca.biplot <- GE.plot(kpca.tumor.data$gene.expressions,
                        kpca.tumor.data$micro.arrays,
