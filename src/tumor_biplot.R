@@ -22,16 +22,8 @@ tissue.data <- as.matrix(read.table(file=TISSUES.PATH,header=FALSE))[, 1]
 tissue.col<-rep("green",length(tissue.data))
 tissue.col[tissue.data=="-"]="red"
 
-# i) log2 transformation
-tumor.data<-log2(tumor.data)
-# ii) chip (row) standardising these values
-# iii) Column (gene) centering at 0.
-# http://en.wikipedia.org/wiki/Centering.matrix
-tumor.data<-t(scale(t(tumor.data)))
-
-
 kpca.tumor.data <- our.kpca(tumor.data, kernel = "rbfdot",
-                            kpar = list(sigma = 0.2), features = 2, alpha = 0.5)
+                            kpar = list(sigma = 0.1), features = 2, alpha = 0.5)
 
 # kpca.tumor.data is a list of the gene expression data and the microarrays
 # projected onto the principal components. 
@@ -49,5 +41,5 @@ dev.off()
 pdf("normal-biplot.pdf")
 normal.biplot <- GE.biplot(tumor.data,tit="GE-Biplot: Tumor Data",
                          clabs=tissue.data,cclr=tissue.col,gclr="black",
-                         opt.log=F,opt.stand=F,cex.lab=.8)
+                         opt.log=T,opt.stand=T,cex.lab=.8)
 dev.off()
