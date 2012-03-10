@@ -18,6 +18,13 @@ our.kpca <- function(x, kernel = "rbfdot", kpar = list(sigma = 0.1),
                         features = 0, th = 1e-4, na.action = na.omit,
                         alpha = 0.5, ...)
   {
+    # Do all of the preprocessing nonsense.
+    x <- as.matrix(x)
+    x <- log2(x)
+    x <- t(scale(t(x)))
+    mn <- colMeans(x)
+    x <- sweep(x, 2, mn)
+    
     x.svd <- our.svd(x, alpha)
     G <- x.svd$G
     H <- x.svd$H
