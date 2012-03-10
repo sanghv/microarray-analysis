@@ -27,7 +27,7 @@ our.kpca <- function(x, kernel = "rbfdot", kpar = list(sigma = 0.1),
     kg <- kernelMatrix(kernel, H, G)
   
     # Projects G onto the principal component values
-    G.prj <- t(pcv(res)) %*% kg
+    G.prj <- t(kg) %*% pcv(res)
 
     # Right now it just returns a list that contains the rows of H and the rows
     # of G projected onto the principal components.

@@ -31,7 +31,7 @@ tumor.data<-t(scale(t(tumor.data)))
 
 
 kpca.tumor.data <- our.kpca(tumor.data, kernel = "rbfdot",
-                            kpar = list(sigma = 0.1), features = 2, alpha = 0.5)
+                            kpar = list(sigma = 0.2), features = 2, alpha = 0.5)
 
 # kpca.tumor.data is a list of the gene expression data and the microarrays
 # projected onto the principal components. 
