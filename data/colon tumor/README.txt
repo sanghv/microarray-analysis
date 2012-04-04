@@ -1,1 +1,0 @@
-This folder will be deleted as soon as everyone stops using it. Please use COLON instead.
