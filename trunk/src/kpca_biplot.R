@@ -1,5 +1,5 @@
-library(kernlab)
-library(svd)
+library('kernlab')
+library('svd')
 
 # Take a matrix X and a parameter a and produce a list of the matrices G and H
 # that form its singular value decomposition G %*% t(H) as done in the paper.
@@ -18,12 +18,29 @@ our.kpca <- function(x, kernel = "rbfdot", kpar = list(sigma = 0.1),
                         features = 0, th = 1e-4, na.action = na.omit,
                         alpha = 0.5, ...)
   {
-    # Do all of the preprocessing nonsense.
     x <- as.matrix(x)
+    
+    # I don't even know if what i'm about to do is valid...
+    # In order to guarantee that we can take the log of the values is positive
+    # we will translate all of the values so they are at least 1 because
+    # anything less is not defined when taking the logarithm of that value
+    minElement.index <- which(x == min(x), arr.ind = TRUE)
+    minElement.value <- x[minElement.index[1,1], minElement.index[1,2]]
+    if (minElement.value <= 0)
+    {
+        x <- x + abs(minElement.value)+ 0.01
+    }
+    
+    
+    # Do all of the preprocessing nonsense.
     x <- log2(x)
     x <- t(scale(t(x)))
+    
     mn <- colMeans(x)
     x <- sweep(x, 2, mn)
+    
+    
+    
     
     x.svd <- our.svd(x, alpha)
     G <- x.svd$G
@@ -40,4 +57,3 @@ our.kpca <- function(x, kernel = "rbfdot", kpar = list(sigma = 0.1),
     # of G projected onto the principal components.
     return(list(micro.arrays = G.prj, gene.expressions = rotated(res)))
   }
-    
