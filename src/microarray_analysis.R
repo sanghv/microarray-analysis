@@ -1,5 +1,6 @@
 # Change to your respective trunk
-TRUNK.DIR<-"C:/Users/King Charles/workspace/cap-6545-microarray-analysis/"
+#TRUNK.DIR<-"C:/Users/King Charles/workspace/cap-6545-microarray-analysis/"
+TRUNK.DIR<-"~/cap-6545-microarray-analysis/"
 
 COLOR.PALETTE = c("green","red","blue","orange","purple","pink")
 
