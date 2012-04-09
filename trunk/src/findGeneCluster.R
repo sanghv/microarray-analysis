@@ -12,6 +12,9 @@
 #		# used to get a biplot to see how it looks
 #		makeBiPlot()
 #
+#		# used to find the best parameters for the kernel
+#		findBestSplit()
+#
 #######################################################################
 
 # information theoretic measure for clustering
@@ -142,5 +145,4 @@ for (i in 1:nrow(DATASETS))
 		print(sum(ypred==ytest)/length(ytest))
 
 	}
-
 }
