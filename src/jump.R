@@ -1,11 +1,11 @@
 ########################################################################################
 #
 # Hacked up code implementation for Sugar and James Entropy approximation for number of
-# clusters to use in K-Means methods. The theory dictates a y vector with to be formed
+# clusters to use in K-Means methods. The theory dictates a y vector should be formed
 # where a matrix nxp (n samples....p genes) will give y = p/2. This is an awesome algo.
 # 
-# Don't bother reading this. It will make your brain melt. No attempt to make it clear
-# was used.
+# Don't bother reading this. It will make your brain melt. No attempts were made to be 
+# clear. NO TIME!!!!!!!!!!!!!!!!!!
 #
 ########################################################################################
 

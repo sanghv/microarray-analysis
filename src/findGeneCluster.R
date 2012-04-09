@@ -6,7 +6,8 @@
 #		source("findGeneCluster.R")
 #	
 #		# used to get predicted clusters
-#		predictCluster(sigmvalue)
+#		predictCluster(sigmvalue), see different values of sigma on a
+#			a scatter plot in kernel space. This uses an information theoretic approach.
 #
 #		# used to get a biplot to see how it looks
 #		makeBiPlot()
@@ -67,34 +68,40 @@ for (i in 1:nrow(DATASETS))
 	}
 			
 	# Perform our KPCA function
-	kpca.data <- our.kpca(dataset.expressionProfiles, kernel = "rbfdot", kpar = list(sigma = 0.1), features = 2, alpha = 0.5)
+	#kpca.data <- our.kpca(dataset.expressionProfiles, kernel = "rbfdot", kpar = list(sigma = 0.1), features = 2, alpha = 0.5)
+	kpca.data <- 0
 }
 
 ##################################################################
 # Helper function ignore. Used for kmeans analysis
 ##################################################################
-"km" <- function(x){
+"km" <- function(x, output){
 	y = jump(x)
 	kms <- kmeans(x, y)
+	print("Number of Clusters")
 	print(y)
-	plot(x, col=kms$cluster)	
+	
+	if (output)
+		plot(x, col=kms$cluster)	
 
 }
 
 ###################################################################
 # Make a nice graph of scatter points and clusters
 ###################################################################
-"predictClusters" <- function(sigV) {
+"predictClusters" <- function(sigV, output=T) {
 	
 	kpca.data <- our.kpca(dataset.expressionProfiles, kernel = "rbfdot", kpar = list(sigma = sigV), features = 2, alpha = 0.5)
 	y <- kpca.data$gene.expressions
-	km(y)
+	km(y, output)
+	
+	kpca.data
 }
 
 ####################################################################
 # make a ge-biplot to view what the sigma value gives
 ####################################################################
-"makeBiPlot" <- function() {
+"makeBiPlot" <- function(kpca.data) {
 
 	kpca.biplot <- GE.plot(kpca.data$gene.expressions,
                             kpca.data$micro.arrays,
@@ -105,4 +112,35 @@ for (i in 1:nrow(DATASETS))
                             gclr=  "black")
 }
 
+#####################################################################
+# SVM for finding best seperation 
+#
+######################################################################
+"findBestSplit" <- function(){
+	
+	y <- do.call(rbind, as.list(dataset.classifications))	
+	
+	for (i in c(0.3)){
+		dataSet <- predictClusters(i, output=F)
+		x <- dataSet$gene.expressions	
+		n <- nrow(x)	
 
+		ntrain <- round(n*0.8)
+		tindex <- sample(n, ntrain)
+
+		xtrain <- x[tindex,]
+		xtest <- x[-tindex,]	
+
+		ytrain <- y[tindex]	
+		ytest <- y[-tindex,]	
+		
+		supportVM <- ksvm(xtrain, ytrain, type="C-svc", kernel='vanilladot', C=100, scaled=c())
+		
+		ypred = predict(supportVM, xtest)
+
+		print("Accuracy")
+		print(sum(ypred==ytest)/length(ytest))
+
+	}
+
+}
