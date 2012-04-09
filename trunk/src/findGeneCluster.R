@@ -119,11 +119,11 @@ for (i in 1:nrow(DATASETS))
 # SVM for finding best seperation 
 #
 ######################################################################
-"findBestSplit" <- function(){
+"findBestSplit" <- function(i){
 	
 	y <- do.call(rbind, as.list(dataset.classifications))	
 	
-	for (i in c(0.3)){
+	#for (i in c(0.3)){
 		dataSet <- predictClusters(i, output=F)
 		x <- dataSet$gene.expressions	
 		n <- nrow(x)	
@@ -144,5 +144,5 @@ for (i in 1:nrow(DATASETS))
 		print("Accuracy")
 		print(sum(ypred==ytest)/length(ytest))
 
-	}
+	#}
 }
