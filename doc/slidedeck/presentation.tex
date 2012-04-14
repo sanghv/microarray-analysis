@@ -10,7 +10,6 @@
 %
 
 \documentclass[serif]{beamer}
-
 % My beamer theme
 \usetheme{Hannover}
 \usecolortheme{crane}
@@ -22,6 +21,8 @@
 \usepackage{graphicx}
 \usepackage{rotating}
 \usepackage{etoolbox}
+\usepackage{xfrac} % for \sfrac{...}{...}
+\usepackage{array} % for centered tabular
 
 \usepackage{color}
 \usepackage{listings}
@@ -43,6 +44,9 @@
 }
 \newcommand{\codepause}{\pause \vspace{-0.165in} } 
 		
+\newcommand\ConstrainedBox[3]{
+  \makebox{\parbox[t][#1][c]{#2}{\centering#3}}}
+
 
 
 % Decide if you want notes shown
@@ -72,13 +76,13 @@
 {
 	\begin{block}{}
 	\begin{itemize}
-		\item
+		\item[~]
 		{
 			\underline{Mining Gene Expression Profiles: An Integrated} \linebreak
 			\underline{Implementation of Kernel Principal Component} \linebreak
 			\underline{Analysis and Singular Value Decomposition}
 			\begin{itemize}
-					\item  Reverter et al,Genomics Proteomics Bioinformatics (2010)
+					\item[~]  Reverter et al,Genomics Proteomics Bioinformatics (2010)
 			\end{itemize}
 		}
 	\end{itemize}	
@@ -91,12 +95,7 @@
 	\section{Problem Domain}
 	
 	\begin{frame}
-		\titlepage
-		
-		\note
-		{
-			TODO
-		}		
+		\titlepage		
 	\end{frame}
 
 	\begin{frame}[t]
@@ -178,12 +177,6 @@
 				}
 			}
 		\end{columns}
-		
-		\note
-		{
-			
-		}
-		
 	\end{frame}
 	
 	\begin{frame}[t]
@@ -244,7 +237,7 @@
 
 	\begin{frame}
 		\frametitle{KPCA-Biplot Algorithm}
-		\subtitle{Problem Formulation}
+		\framesubtitle{Problem Formulation}
 		
 		Start with a Gene Expression Profile matrix $\mathbf{X}$:
 
@@ -369,7 +362,7 @@
 		\begin{lstlisting}[mathescape]
 		for(i $\ldots$ N)
 		{
-		    // Where $T_{i}$(...) is some preprocessing function
+		    // Where $\mathbin{ \color[rgb]{0.133,0.545,0.133} T_{i}}$(...) is some preprocessing function
 		    // which transforms a vector into a new one.	
 		    $\mathbf{X}=T_{i}(\mathbf{X})$
 		}
@@ -688,7 +681,7 @@
 
 	\begin{frame}[t, fragile]
 		\frametitle{KPCA-Biplot Algorithm}
-		\framesubtitle{Biplot}
+		\framesubtitle{Plotting the Biplot}
 		
 		\begin{lstlisting}[mathescape, language=C]
 		
@@ -730,51 +723,120 @@
 	\end{frame}
 	
 	\section{Datasets}
-	\begin{frame}
-		\frametitle{KPCA-Biplot}
+	\begin{frame}[t]
+		\frametitle{Datasets}
 
-		In our research we've used {\bf 4} freely available datasets with labeled samples:
+		\begin{block}{\vspace{-0.5in}	}		
+			In our research we've used {\bf 4} freely available datasets with labeled samples.
+		\end{block}
 
 		% http://icos.cs.nott.ac.uk/datasets/microarray.html
 		% http://www.inf.ed.ac.uk/teaching/courses/dme/html/datasets0405.html
+		
+		\only<1>
+		{
 		\begin{enumerate}
+	 		\setcounter{enumi}{0}
 			\item {\bf COLON dataset}: 
 				\begin{itemize}
-					\item  $ Labels = \left \{ \text{Tumor}, \text{No Tumor}  \right \}$
-					\item 2,000 gene expression levels, 62 samples
+					\item  $ Labels: \left \{ \textsc{ Tumor}, \textsc{ No Tumor}  \right \}$
+					\item 2,000 gene expression levels
+					\item  62 samples
+					\begin{itemize}
+						\item[$\rightarrow$] How many tumor
+						\item[$\rightarrow$] How many not tumor
+					\end{itemize}
+					\item  \textsc{Preprocessing:}
+					\begin{itemize}
+						\item[$\rightarrow$] Item 1
+						\item[$\rightarrow$] Item 2
+						\item[$\rightarrow$] Item 3
+					\end{itemize}
 				\end{itemize}
+		\end{enumerate}
+		}
+		\only<2>
+		{
+		\begin{enumerate}
+	 		\setcounter{enumi}{1}
 			\item {\bf LYMPHOMA dataset}: 
 				\begin{itemize}
-					\item  $ Labels = 
-						\left \{ \text{DLBCL}\footnote{Diffuse large B-cell lymphoma},
-							 \text{FL}\footnote{Follicular lymphoma}  \right \}$
-					\item 6,817 gene expression levels, 77 samples % DLBCL (n = 58) and FL (n = 19)
+					\item  $ Labels: 
+						\left \{ \textsc{DLBCL}\footnote{Diffuse large B-cell lymphoma},
+							 \textsc{FL}\footnote{Follicular lymphoma}  \right \}$
+					\item 6,817 gene expression levels
+					\item 77 samples
+					\begin{itemize}
+						\item[$\rightarrow$] \textsc{DLBCL} Samples: 58
+						\item[$\rightarrow$] \textsc{FL} Samples: 19
+					\end{itemize}
+					\item  \textsc{Preprocessing:}
+					\begin{itemize}
+						\item[$\rightarrow$]  Rescaling (multiply each sample by $\sfrac{1}{slope}$ of
+						a linear least squares fit of the sample vs. the first sample "reference")
+						\item[$\rightarrow$]  Minimum Thresholding at 20 (minimize noise effects)
+						\item[$\rightarrow$]  Maximum Thresholding at 1600 (reduce florescence saturation)
+						\item[$\rightarrow$]  Variation Filter (exclude genes with less than 3-fold variation and less than 100 units of standard deviation)
+					\end{itemize}
 				\end{itemize}
+		\end{enumerate}
+		}
+		\only<3>
+		{
+		\begin{enumerate}
+			\setcounter{enumi}{2}
 			\item {\bf PROSTATE dataset}:
 				\begin{itemize}
-					\item  $ Labels = \left \{ \text{Tumor}, \text{No Tumor}  \right \}$
-					\item 2,135 gene expression levels, 77 samples % Tumor (n = 52) and No Tumor (n = 50)
-				\end{itemize}
-			% http://www.biolab.si/supp/bi-cancer/projections/info/leukemia.htm
-			\item {\bf Leukemia dataset }:
+					\item  $ Labels: \left \{ \text{Tumor}, \text{No Tumor}  \right \}$
+					\item 2,135 gene expression levels
+					\item  77 samples
 					\begin{itemize}
-					\item  $ Labels = 	\left
+						\item[$\rightarrow$]  \textsc{Tumor} Samples: 52
+						\item[$\rightarrow$]  \textsc{No Tumor} Samples: 50
+					\end{itemize}					
+					\item  \textsc{Preprocessing:}
+					\begin{itemize}
+						\item[$\rightarrow$]  Scaling (median of the mean difference of all genes)
+						\item[$\rightarrow$]  Minimum Thresholding at 10
+						\item[$\rightarrow$]  Maximum Thresholding at 1600
+					\end{itemize}
+				\end{itemize}
+		\end{enumerate}
+		}
+		\only<4>
+		{
+		\begin{enumerate}
+			\setcounter{enumi}{3}
+			% http://www.biolab.si/supp/bi-cancer/projections/info/leukemia.htm
+			\item {\bf Leukemia dataset}:
+					\begin{itemize}
+					\item  $ Labels: 	\left
 						 \{ \text{ALL}\footnote{Acute lymphoblastic leukemia},
 						 \text{AML}\footnote{Acute myeloid leukemia}
 								 \right \}$
-					\item 5,147 gene expression levels, 72 samples % ALL (n = 47) and AML (n = 25)
+					\item 5,147 gene expression levels
+					\item 72 samples
+					\begin{itemize}
+						\item[$\rightarrow$] \textsc{ALL} Samples: 47
+						\item[$\rightarrow$] \textsc{AML} Samples: 25
+					\end{itemize}
+					\item  \textsc{Preprocessing:}
+					\begin{itemize}
+						\item[$\rightarrow$] Item 1
+						\item[$\rightarrow$] Item 2
+						\item[$\rightarrow$] Item 3
+					\end{itemize}
 				\end{itemize}
 		\end{enumerate}		
-
-	\end{frame}
-
-	\begin{frame}
-		How they were preprocessed
+		}
 	\end{frame}
 
 	\subsection{Tuning}
 	\begin{frame}
-		Wait a minute, what about the unsolved parameters?
+		\begin{center}
+			\huge
+			``Wait a minute, what about the unsolved parameters?"
+		\end{center}
 	\end{frame}
 	
 	\begin{frame}
@@ -786,14 +848,191 @@
 		\end{block}	
 	\end{frame}
 	
-	\begin{frame}
-		Example of different alpha values ( 0.00, 0.10, 0.20, 0.30, 0.40)
-	\end{frame}
+		
+		\newcommand{\alphabiplot}[2]
+		{
+			\begin{center}
+				\includegraphics[width=2.50in, height=2.50in]{images/alpha_graphs/#1}
+				\linebreak
+				{\huge $\alpha = #2$}
+			\end{center}
+		}
+	
+		% Save some monotony
+		\newcommand{\sidealphabiplot}[2]
+		{
+			\begin{center}
+				\includegraphics[width=0.75in, height=0.75in]{images/alpha_graphs/#1}
+				\linebreak
+				$\alpha = #2$
+			\end{center}
+		}
+		\newcommand{\sidealphaspacer}
+		{
+			\begin{center}
+				\includegraphics[width=0.75in, height=0.75in]{images/alpha_graphs/spacer}
+				\newline
+			\end{center}
+		}
+		\newcommand{\sidealphaboldbiplot}[2]
+		{
+			\begin{center}
+				\includegraphics[width=0.75in, height=0.75in]{images/alpha_graphs/#1}
+				\linebreak
+				$\alpha = \textbf{#2}$
+			\end{center}
+		}
+
 	
 	\begin{frame}
-		Example of different alpha values ( 0.50, 0.60, 0.70, 0.80, 0.90, 1.00)
-	\end{frame}
 	
+	
+		
+	
+		\begin{columns}
+			\begin{column}{1in}
+				% alpha = 0.00
+				\only<1>
+				{
+					\sidealphaspacer
+					\sidealphaboldbiplot{0_00}{0.00}
+					\sidealphabiplot{0_10}{0.10}
+				}
+				% alpha = 0.10
+				\only<2>
+				{
+					\sidealphabiplot{0_00}{0.00}
+					\sidealphaboldbiplot{0_10}{0.10}
+					\sidealphabiplot{0_20}{0.20}
+				}
+				% alpha = 0.20
+				\only<3>
+				{
+					\sidealphabiplot{0_10}{0.10}
+					\sidealphaboldbiplot{0_20}{0.20}
+					\sidealphabiplot{0_30}{0.30}
+				}
+				% alpha = 0.30
+				\only<4>
+				{
+					\sidealphabiplot{0_20}{0.20}
+					\sidealphaboldbiplot{0_30}{0.30}
+					\sidealphabiplot{0_40}{0.40}
+				}
+				% alpha = 0.40
+				\only<5>
+				{
+					\sidealphabiplot{0_30}{0.30}
+					\sidealphaboldbiplot{0_40}{0.40}
+					\sidealphabiplot{0_50}{0.50}
+				}
+				% alpha = 0.50
+				\only<6>
+				{
+					\sidealphabiplot{0_40}{0.40}
+					\sidealphaboldbiplot{0_50}{0.50}
+					\sidealphabiplot{0_60}{0.60}
+				}
+				% alpha = 0.60
+				\only<7>
+				{
+					\sidealphabiplot{0_50}{0.50}
+					\sidealphaboldbiplot{0_60}{0.60}
+					\sidealphabiplot{0_70}{0.70}
+				}
+				% alpha = 0.70
+				\only<8>
+				{
+					\sidealphabiplot{0_60}{0.60}
+					\sidealphaboldbiplot{0_70}{0.70}
+					\sidealphabiplot{0_80}{0.80}
+				}
+				% alpha = 0.80
+				\only<9>
+				{
+					\sidealphabiplot{0_70}{0.70}
+					\sidealphaboldbiplot{0_80}{0.80}
+					\sidealphabiplot{0_90}{0.90}
+				}
+				% alpha 0.90
+				\only<10>
+				{
+					\sidealphabiplot{0_80}{0.80}
+					\sidealphaboldbiplot{0_90}{0.90}
+					\sidealphabiplot{1_00}{1.00}
+					
+				}
+				% alpha 1.00
+				\only<11>
+				{
+					\sidealphabiplot{0_90}{0.90}
+					\sidealphaboldbiplot{1_00}{1.00}
+					\sidealphaspacer
+				}
+			\end{column}
+			\begin{column}{3in}
+				
+				\only<1>{ \alphabiplot{0_00}{0.00} }
+				\only<2>{ \alphabiplot{0_10}{0.10} }
+				\only<3>{ \alphabiplot{0_20}{0.20} }
+				\only<4>{ \alphabiplot{0_30}{0.30} }
+				\only<5>{ \alphabiplot{0_40}{0.40} }
+				\only<6>{ \alphabiplot{0_50}{0.50} }
+				\only<7>{ \alphabiplot{0_60}{0.60} }
+				\only<8>{ \alphabiplot{0_70}{0.70} }
+				\only<9>{ \alphabiplot{0_80}{0.80} }
+				\only<10>{ \alphabiplot{0_90}{0.90} }
+				\only<11>{ \alphabiplot{1_00}{1.00} }
+				
+			\end{column}
+
+
+		\end{columns}
+	
+	\end{frame}
+
+	\begin{frame}
+		
+		\begin{table}
+		\begin{tabular}
+		{
+			|>{\centering\arraybackslash}m{1.50in}
+			|>{\centering\arraybackslash}m{1.00in}
+			|>{\centering\arraybackslash}m{1.00in}|
+		}
+			\hline
+				~ &
+				\textbf{Reverter et Al.} &
+				\textbf{Wolas et Al.} \newline (Us)
+				
+			\\
+			\hline
+				\textbf{COLON} &
+				0.50 &
+				0.50
+			\\
+			\hline
+				\textbf{LYMPHOMA} &
+				0.50 &
+				0.50
+			\\
+			\hline
+				\textbf{PROSTATE} &
+				- &
+				0.50
+			\\
+			\hline
+				\textbf{LEUKEMIA} &
+				0.50 &
+				0.50  
+			\\
+			\hline
+		\end{tabular}
+		\caption{ $\alpha$ values for biplot}
+	\end{table}
+		
+	\end{frame}
+
 	\subsection{Validation}
 	\begin{frame}
 		Discussion of kernel tuning and cross validation 
@@ -804,90 +1043,813 @@
 	\end{frame}
 	
 	\begin{frame}
-		Insert our optimized sigma values versus theirs
+		
+		\begin{table}
+		\begin{tabular}
+		{
+			|>{\centering\arraybackslash}m{1.50in}
+			|>{\centering\arraybackslash}m{1.00in}
+			|>{\centering\arraybackslash}m{1.00in}|
+		}
+			\hline
+				~ &
+				\textbf{Reverter et Al.} &
+				\textbf{Wolas et Al.} \newline (Us)
+				
+			\\
+			\hline
+				\textbf{COLON} &
+				0.10 &
+				- 
+			\\
+			\hline
+				\textbf{LYMPHOMA} &
+				0.01 &
+				-
+			\\
+			\hline
+				\textbf{PROSTATE} &
+				- &
+				- 
+			\\
+			\hline
+				\textbf{LEUKEMIA} &
+				0.001 &
+				- 
+			\\
+			\hline
+		\end{tabular}
+		\caption{Optimized $\sigma$ for kernel}
+	\end{table}
+		
 	\end{frame}
 	
 	
 	\section{Results}
 	
-	\begin{frame}
-		COLON Results (Our KPCA-Biplot vs Reverter KPCA)
-	\end{frame}
-	
-	\begin{frame}
-		COLON Results (Our KPCA-Biplot vs Biplot)
-	\end{frame}
-	
-	\begin{frame}
-		LYMPHOMA Results (Our KPCA-Biplot vs Biplot)
-	\end{frame}
-	
-	\begin{frame}
-		PROSTATE Results (Our KPCA-Biplot vs Biplot)
-	\end{frame}
-	
-	\begin{frame}
-		LEUKEMIA RESULTS (Our KPCA-Biplot vs Reverter KPCA)
-	\end{frame}	
-	
-	\begin{frame}
-		LEUKEMIA RESULTS (Our KPCA-Biplot vs Biplot)
-	\end{frame}
+	\begin{frame}[t]
 
-	\begin{frame}
-		How to interpret biplots (take from albert's slides)
+		\begin{block}
+		{
+			\only<1-2>
+			{
+				TUMOR Dataset
+			}
+			\only<3-4>
+			{
+				LEUKEMIA Datasets
+			}
+			\only<5>
+			{
+				PROSTATE Datasts
+			}
+			\only<6>
+			{
+				LYMPHOMA Dataset
+			}
+		}
+		{
+			TODO:Compare two graphs
+		}	
+		\end{block}
+
+		\begin{columns}
+			\begin{column}{1.75in}
+				\vspace{-1.00in}
+				
+				\only<1-2>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/COLON_OUR_KPCA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Our KPCA-Biplot
+						}
+					\end{center}
+				}
+				\only<3-4>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LEUKEMIA_OUR_KPCA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Our KPCA-Biplot
+						}
+					\end{center}
+				}
+				\only<5>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/PROSTATE_OUR_KPCA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Our KPCA-Biplot
+						}
+					\end{center}
+				}
+				\only<6>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LYMPHOMA_OUR_KPCA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Our KPCA-Biplot
+						}
+					\end{center}
+				}
+				
+				
+			\end{column}
+			\begin{column}{0.5in}
+				\begin{center}
+					\vspace{-0.50in}
+					\ConstrainedBox{0.50in}{0.50in}
+					{
+						\huge \textbf{VS.}
+					}
+					
+				\end{center}
+			\end{column}
+			\begin{column}{1.75in}
+				\vspace{0.75in}
+				%
+				% COLON
+				%
+				\only<1>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/COLON_REVERTER_KPCA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Reverter et Al.
+							KPCA-Biplot
+						}
+					\end{center}
+				}
+				\only<2>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/COLON_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Standard Biplot
+						}
+					\end{center}
+				}
+				%
+				% LYMPHOMA
+				%
+				\only<3>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LEUKEMIA_REVERTER_KPCA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Reverter et Al.
+							KPCA-Biplot
+						}
+						
+					\end{center}
+				}
+				\only<4>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LEUKEMIA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Standard Biplot
+						}
+						
+					\end{center}
+				}
+				\only<5>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/PROSTATE_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Standard Biplot
+						}
+					\end{center}
+				}
+				\only<6>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LYMPHOMA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Standard Biplot
+						}
+					\end{center}
+				}
+			\end{column}
+		\end{columns}
+		
+	\end{frame}
+	
+	\begin{frame}[t]
+		\frametitle{Biplot Interpretations}
+		\framesubtitle{Err... now what?}
+	
+		\only<1>
+		{
+		\large
+		\begin{block}{\vspace{-0.5in}}
+			Reading a biplot is \emph{intuitive} \underline{after} you grasp the concepts. 	
+		\end{block}
+		\raggedright Until then...
+		\begin{center}
+			\includegraphics[height=1.5in]{images/confused}	
+		\end{center}
+		\raggedleft ...It's rather confusing.
+		}
+		
+		\only<2>
+		{
+			\begin{columns}
+				\begin{column}{1.5in}
+					Some image
+				\end{column}
+				\begin{column}{2.5in}
+					\begin{block}{Upregulation}	
+						Genes that lie \textbf{close} to a cluster of samples are more highly expressed (upregulated) in that cluster of samples versus others.
+					\end{block}
+				\end{column}
+			\end{columns}
+			\vspace{0.30in}
+			\begin{columns}
+				\begin{column}{1.5in}
+					Some image
+				\end{column}
+				\begin{column}{2.5in}
+					\begin{block}{Downregulation}
+						Likewise, Genes that lie \textbf{far away} from a cluster of samples are less expressed (downregulated) in that cluster of samples versus others.
+					\end{block}
+				\end{column}
+			\end{columns}
+		}
+		
+		\only<3>
+		{
+			\vspace{0.75in}
+			\begin{columns}
+				\begin{column}{1.5in}
+					Some image
+				\end{column}
+				\begin{column}{2.5in}
+					\begin{block}{Differential Expression}
+						Genes that are \textbf{further away} from the origin are more differentially expressed than genes that are \textbf{closer} to the origin.
+					\end{block}
+				\end{column}
+			\end{columns}
+		}
+		
+		\only<4>
+		{
+			% CITE: http://www.ggebiplot.com/hs40.htm
+			\begin{center}
+				\includegraphics[width=2.0in]{images/inner_product_property_biplot}
+			\end{center}
+			
+			\begin{block}{Inner Product Property}
+				some kind of explanation lol
+			\end{block}
+		}
+		
+		\only<5>
+		{
+			% CITE: http://www.ggebiplot.com/hs40.htm
+			\begin{center}
+				\includegraphics[width=2.0in]{images/cosine_correlation_property_biplot}	
+			\end{center}
+			
+			\begin{block}{Cosine Correlation Property}
+						some kind of explanation lol
+			\end{block}
+			
+		}
+		
 	\end{frame}
 	
 	
 	\section{Analysis}
 	
-	\begin{frame}
-		Individual analysis of genes. We can say we still haven't finished but
-		we'll put it in the report.
-	\end{frame}
-	
-	\begin{frame}
-		Insert what genes Reverter et Al. found expressed
-	\end{frame}
-	
+	\begin{frame}[t]
+		\frametitle{Analysis of Genes}
+		\framesubtitle{Exploring and Validating Highly Differential Genes}
+		\begin{block}{\vspace{-0.5in}}
+			\alert{Still currently a work in progress.}
+		\end{block}
+		We hope to verify and expand on Reverter et al.'s findings.
+		
+		\only<2>
+		{
+			\begin{block}{Notable Tumor Genes}
+				
+			\end{block}
+		}
+		
+		\only<3>
+		{
+			\begin{block}{Notable Leukemia Genes}
+				
+			\end{block}
+		}
+		
+		\only<4>
+		{
+			\begin{block}{Notable Lymphoma Genes}
+				
+			\end{block}
+		}
+	\end{frame}	
 	
 	\section{Program}
 	
 	\begin{frame}
-		Implementation in R, Python (import picture logos, very brief talking points). Necessary because we did do an implementation so code DOES
-		matter.
+	
+	\begin{columns}
+		\begin{column}{2.4in}
+			
+			\vspace{0.25in}
+			\begin{center}
+				\raggedleft
+				\only<1-3>
+				{
+					\includegraphics[width=2.25in]{images/python_logo}
+				}
+				\only<4-9>
+				{
+					\includegraphics[width=2.25in]{images/python_logo_dimmed}
+				}
+			\end{center}
+			\begin{center}
+				\emph{\Huge \&}
+			\end{center}
+			\begin{center}
+				\raggedright
+				\only<1-3>
+				{
+					\includegraphics[width=1.300in]{images/R_logo_dimmed}	
+				}
+				\only<4-9>
+				{
+					\includegraphics[width=1.300in]{images/R_logo}	
+				}
+			\end{center}
+			\begin{center}
+				\emph{Went together like cookies and milk}
+			\end{center}
+			
+		\end{column}
+		\begin{column}{1.6in}	
+			\begin{exampleblock}{Implementation}
+				\begin{itemize}
+					\item
+					{
+						\color<4-9>{blockgray}
+						{
+							\textbf{Python}
+						}
+						\begin{itemize}
+							\item[$\rightarrow$]
+							{
+							
+								\color<1,3-9>{blockgray}{Initial Prototyping}
+							}
+							\item[$\rightarrow$]
+							{
+								\color<1-2,4-9>{blockgray}{Manipulation of raw data
+								into kosher formats for R}
+							}
+						\end{itemize}
+					}
+					\item
+					{
+						\color<1-3>{blockgray}
+						{
+							\textbf{R}
+						}
+					\begin{itemize}
+						\item[$\rightarrow$]
+						{
+							\color<1-4,6-9>{blockgray}{KPCA Implementation}
+						}
+						\item[$\rightarrow$]
+						{
+							\color<1-5,7-9>{blockgray}{JUMP Algorithm}
+						}
+						\item[$\rightarrow$]
+						{
+							\color<1-6,8-9>{blockgray}{Crossvalidation}
+						}
+						\item[$\rightarrow$]
+						{
+							\color<1-7,9>{blockgray}{Biplots}
+						}
+						\item[$\rightarrow$]
+						{
+							\color<1-8>{blockgray}{Analysis}
+						}
+					\end{itemize}
+					}
+				\end{itemize}
+			\end{exampleblock}
+		\end{column}
+	\end{columns}
+	
 	\end{frame}
 	
 	
 	\section{Insights}
 	
-	\begin{frame}
-		Insights:
-		\begin{itemize}
-			\item  Datasets were computationally expensive
-			\item  Literature on biplots was esoteric
-			\item  No cross validation methodology revelead (had to
-			replicate using techniques determined within team)
-			\item  No KPCA-Biplot code freely available (had to implement
-			using paper)
-			\item  Exploratory statistics is a new topic to us
-		\end{itemize}
+	\begin{frame}[t]
+		\frametitle{Insights / Reflections}
+		\only<1-3>
+		{
+			{\huge \sc The Good}
+			\begin{itemize}
+				\item
+				{
+					\color<2-3>{gray10percent}
+					{
+						\footnotesize
+						Datasets were readily available
+					}
+					\vspace{-0.2in}
+					\begin{columns}
+						\begin{column}{0.5in}
+							%NOTE: FOR SPACING ONLY
+						\end{column}
+						% Visually looks like indented block without title
+						\begin{column}{3.5in}
+							
+							\begin{block}{\vspace{-0.5in}}
+							\begin{columns}
+								\begin{column}{1.0in}
+									\begin{center}
+										\only<1>
+										{
+											\includegraphics[width=1in]{images/assemblyrequired}
+										}
+										\only<2-3>
+										{
+											\includegraphics[width=1in]{images/assemblyrequired_dimmed}
+										}
+									\end{center}
+								\end{column}
+								\begin{column}{2.5in}
+									\color<2-3>{blockgray}
+									{
+									\footnotesize
+									Some formatting and massaging was needed
+									}
+								\end{column}	
+							\end{columns}
+							\end{block}
+						\end{column}
+					\end{columns}
+					
+				}
+				\item 
+				{
+					\color<1,3>{gray10percent}
+					{
+						\footnotesize
+						Good applied use of R which is extremely useful for data mining.
+					}
+					\vspace{-0.3in}
+					\begin{columns}
+						\begin{column}{0.5in}
+							%NOTE: FOR SPACING ONLY
+						\end{column}
+						% Visually looks like indented block without title
+						\begin{column}{3.5in}
+							
+							\begin{block}{\vspace{-0.5in}}
+							\begin{columns}
+								\begin{column}{1.0in}
+									\begin{center}
+									\only<2>
+									{
+										\includegraphics[width=1in]{images/bioconductor}	
+									}
+									\only<1,3>
+									{
+										\includegraphics[width=1in]{images/bioconductor_dimmed}
+									}
+									\end{center}
+									
+								\end{column}
+								\begin{column}{2.5in}
+									\color<1,3>{blockgray}
+									{
+									\footnotesize
+									{\sc Bioconductor} package provides excellent bioinformatics packages for R.
+									Well worth a look!
+									\newline
+									\newline
+									We used code of theirs for our {\sc Biplots}.
+									}
+								\end{column}	
+							\end{columns}
+							\end{block}
+						\end{column}
+					\end{columns}
+				
+				}
+				\item 
+				{
+					\color<1-2>{gray10percent}
+					{
+						\footnotesize
+						Awesome introduction to exploratory statistics.
+					}
+					\vspace{-0.2in}
+					\begin{columns}
+						\begin{column}{0.5in}
+							%NOTE: FOR SPACING ONLY
+						\end{column}
+						% Visually looks like indented block without title
+						\begin{column}{3.5in}
+							
+							\begin{block}{\vspace{-0.5in}}
+							\begin{columns}
+								\begin{column}{1.0in}
+									\begin{center}
+										\only<1-2>
+										{
+											\includegraphics[width=0.60in]{images/johntukey_dimmed}	
+										}
+										\only<3>
+										{
+											\includegraphics[width=0.60in]{images/johntukey}
+										}
+									\end{center}
+								\end{column}
+								\begin{column}{2.5in}
+									\color<1-2>{blockgray}
+									{
+									\footnotesize
+									As the famous statistician, John Tukey once said:
+									\newline
+									``Visually examine your data set \emph{then}
+									formulate the hypothesis you wish to test"	
+									}
+								\end{column}	
+							\end{columns}
+							\end{block}
+						\end{column}
+					\end{columns}
+				}
+			\end{itemize}
+		}
+		\only<4-5>
+		{
+			{\huge \sc The Bad}
+			\begin{itemize}
+				\item 
+				{
+					\color<5>{gray10percent}
+					{
+						\footnotesize
+						Literature on biplots was very esoteric.
+					}
+					\vspace{-0.2in}
+					\begin{columns}
+						\begin{column}{0.5in}
+							%NOTE: FOR SPACING ONLY
+						\end{column}
+						% Visually looks like indented block without title
+						\begin{column}{3.5in}
+							
+							\begin{block}{\vspace{-0.5in}}
+							\begin{columns}
+								\begin{column}{1.0in}
+									\begin{center}
+										\only<5>
+										{
+											\includegraphics[width=0.75in]{images/computer_chip_dimmed}	
+										}
+										\only<4>
+										{
+											\includegraphics[width=0.75in]{images/computer_chip}
+										}
+									\end{center}
+								\end{column}
+								\begin{column}{2.5in}
+									\color<5>{blockgray}
+									{
+									\footnotesize
+									Definitely \underline{not} written for {\sc engineers}, {\sc applied mathematicians}, etc.
+									\newline\newline
+									Explanations are usually in terms of domain specific terminology such as {\sc Breeders}, {\sc Geneticists}, and {\sc Agronomists}.
+									}
+								\end{column}	
+							\end{columns}
+							\end{block}
+						\end{column}
+					\end{columns}
+				}
+				\item 
+				{
+					\color<4>{gray10percent}
+					{
+						\footnotesize
+						The datasets were very computationally expensive as we expected.
+					}
+					\vspace{-0.3in}
+					\begin{columns}
+						\begin{column}{0.5in}
+							%NOTE: FOR SPACING ONLY
+						\end{column}
+						% Visually looks like indented block without title
+						\begin{column}{3.5in}
+							
+							\begin{block}{\vspace{-0.5in}}
+							\begin{columns}
+								\begin{column}{1.0in}
+									\begin{center}
+										\only<4>
+										{
+											\includegraphics[width=0.75in]{images/alienware_dimmed}	
+										}
+										\only<5>
+										{
+											\includegraphics[width=0.75in]{images/alienware}
+										}
+									\end{center}
+								\end{column}
+								\begin{column}{2.5in}
+									\color<4>{blockgray}
+									{
+										\footnotesize
+										Some datasets locked up all computers but
+										an {\sc Alienware M17x} that one of us had.
+									}
+								\end{column}	
+							\end{columns}
+							\end{block}
+						\end{column}
+					\end{columns}
+				}
+			\end{itemize}
+		}
+		\only<6-8>
+		{
+			{\huge \sc The Ugly}
+			\begin{itemize}		
+				\item 
+				{
+					\color<7-8>{gray10percent}
+					{
+						\footnotesize
+						Cross validation methodology was too vague to be replicated.
+					}
+					\vspace{-0.2in}
+					\begin{columns}
+						\begin{column}{0.5in}
+							%NOTE: FOR SPACING ONLY
+						\end{column}
+						% Visually looks like indented block without title
+						\begin{column}{3.5in}
+							
+							\begin{block}{\vspace{-0.5in}}
+							\begin{columns}
+								\begin{column}{1.0in}
+									\begin{center}
+										\only<7-8>
+										{
+											\includegraphics[width=0.75in]{images/cross_validate_dimmed}	
+										}
+										\only<6>
+										{
+											\includegraphics[width=0.75in]{images/cross_validate}
+										}
+									\end{center}
+								\end{column}
+								\begin{column}{2.5in}
+									\color<7-8>{blockgray}
+									{
+										\footnotesize
+										Required research of applicable cross-validation techniques.
+									}
+								\end{column}	
+							\end{columns}
+							\end{block}
+						\end{column}
+					\end{columns}
+				}
+				\item 
+				{
+					\color<6,8>{gray10percent}
+					{
+						\footnotesize
+						No KPCA-Biplot code freely available 
+					}
+					\vspace{-0.2in}
+					\begin{columns}
+						\begin{column}{0.5in}
+							%NOTE: FOR SPACING ONLY
+						\end{column}
+						% Visually looks like indented block without title
+						\begin{column}{3.5in}
+							
+							\begin{block}{\vspace{-0.5in}}
+							\begin{columns}
+								\begin{column}{1.0in}
+									\begin{center}
+										\only<6,8>
+										{
+											\includegraphics[width=0.75in]{images/kpca_biplot_dimmed}	
+										}
+										\only<7>
+										{
+											\includegraphics[width=0.75in]{images/kpca_biplot}
+										}
+									\end{center}
+								\end{column}
+								\begin{column}{2.5in}
+									\color<6,8>{blockgray}
+									{
+										\footnotesize
+										Implemented per instructions of the paper and validated results to ensure correctness.
+									}
+								\end{column}	
+							\end{columns}
+							\end{block}
+						\end{column}
+					\end{columns}
+				}
+				\item 
+				{
+					\color<6-7>{gray10percent}
+					{
+						\footnotesize
+						Actual datasets no where in sight just mention of papers.
+					}
+					\vspace{-0.2in}
+					\begin{columns}
+						\begin{column}{0.5in}
+							%NOTE: FOR SPACING ONLY
+						\end{column}
+						% Visually looks like indented block without title
+						\begin{column}{3.5in}
+							
+							\begin{block}{\vspace{-0.5in}}
+							\begin{columns}
+								\begin{column}{1.0in}
+									\begin{center}
+										\only<6-7>
+										{
+											\includegraphics[width=0.60in]{images/search_dimmed}	
+										}
+										\only<8>
+										{
+											\includegraphics[width=0.60in]{images/search}
+										}
+									\end{center}
+								\end{column}
+								\begin{column}{2.5in}
+									\color<6-7>{blockgray}
+									{
+										\footnotesize
+										Had to search high and low to get datasets that were applicable for our implementation.
+									}
+								\end{column}	
+							\end{columns}
+							\end{block}
+						\end{column}
+					\end{columns}
+				}
+			\end{itemize}
+		}
 	\end{frame}
 	
 	\section{Extensions}
 	
-	\begin{frame}
-		Authors had no extensions listed. Here's some:
+	\begin{frame}[t]
+		\frametitle{Possible Extensions}
+		Authors had no extensions listed or even so much as to a hint on what possible could be done.
+		\newline\newline
+		Here's some:
 		\begin{itemize}
 			\item  Algorithm to select highly differentiable genes automatically
 			using the intrinsic relationships of biplots
 			\item  Algorithm to find the best alpha for biplot
+			% EXPLAIN
 			\item  Goodness of Fit metrics for biplots
 		\end{itemize}
 	\end{frame}
 	
 	\begin{frame}
-		Fin
+		\frametitle{That's all folks}
+		\framesubtitle{Questions?}
+		
+		\begin{center}
+			\includegraphics[height=2.75in]{images/end}	
+		\end{center}
+		
 	\end{frame}
 
 	\begin{frame}
