@@ -10,6 +10,14 @@ function(X,tit="",glabs="~", clabs=rownames(X), gclr="red",cclr="blue", axes=c(1
 # X is a  matrix, organized as chip by genes
    X<-as.matrix(X)
    k<-max(axes)
+
+	minElement.index <- which(X == min(X), arr.ind = TRUE)
+    minElement.value <- X[minElement.index[1,1], minElement.index[1,2]]
+    if (minElement.value <= 0)
+    {
+        X <- X + abs(minElement.value)+ 0.01
+    }
+
    if(k<2 | k > min(dim(X))) 
      {cat("GE:ERROR: axes parameter incorrect");return}
    if(opt.log) {if ( min(X) < 0 ) 
@@ -49,6 +57,7 @@ function(X, tit="",glabs="~", clabs=rownames(X), gclr="red",cclr="blue", axes=c(
 # X is a  matrix, organized as chip by genes
    X<-as.matrix(X)
    k<-max(axes)
+
    if(k<2 | k > min(dim(X))) 
      {cat("GE:ERROR: axes parameter incorrect");return}
    if(opt.log) {if ( min(X) < 0 ) 
@@ -87,6 +96,8 @@ function(X, tit="",icon="GE.Icon", genedata,gclr="black",axes=c(1,2), opt.gf=T, 
 # X is a  numerical matrix, organized as chip by genes
 # geneinfo is a numerical axis of means to be used for icons
    X<-as.matrix(X)
+
+
    
    k<-max(axes)
    if(k<2 | k > min(dim(X))) 
@@ -213,7 +224,6 @@ GE.identifyGenes<-function(Genes,glabs=rownames(Genes),...)
 GE.demo<-function()
 {
 library(MASS) #Required for GE functions
-library(multtest) 
 data(golub)  
 # NOTES on the data set
 #   The Data is from the library multtest.
@@ -260,5 +270,5 @@ opt.log=F,opt.stand=F,cex.lab=.8)
 }
 
 #us age
-par(mfrow=c(2,2),mar=c(2,2,2,2),ask=T)
-GE.demo()
+#par(mfrow=c(2,2),mar=c(2,2,2,2),ask=T)
+#GE.demo()
