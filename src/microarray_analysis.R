@@ -7,18 +7,18 @@ COLOR.PALETTE = c("green","red","blue","orange","purple","pink")
 GetFilePaths <-function()
 {
 	# A bunch of static data for our datasets that we will be reading in
-	my.expressionProfiles <- c(#"data/COLON/formatted/expression_profiles.csv", 
-	    					   "data/LEUKEMIA/formatted/expression_profiles.csv"#,
+	my.expressionProfiles <- c("data/COLON/formatted/expression_profiles.csv"#, <--- remove this too lol
+	    					   #"data/LEUKEMIA/formatted/expression_profiles.csv",
 						       #"data/LYMPHOMA/formatted/expression_profiles.csv",
 							   #"data/PROSTATE/formatted/expression_profiles.csv"
 							   )
-	my.classifications <- c(#"data/COLON/formatted/classification.txt",
-							"data/LEUKEMIA/formatted/classification.txt"#,
+	my.classifications <- c("data/COLON/formatted/classification.txt"#, <--- remove this too lol
+							#"data/LEUKEMIA/formatted/classification.txt",
 							#"data/LYMPHOMA/formatted/classification.txt",
 							#"data/PROSTATE/formatted/classification.txt"
 							)
-	my.genes <- c(#"data/COLON/formatted/genes.txt",
-				  "data/LEUKEMIA/formatted/genes.txt"#,
+	my.genes <- c("data/COLON/formatted/genes.txt"#, <--- remove this too lol
+				  #"data/LEUKEMIA/formatted/genes.txt",
 				  #"data/LYMPHOMA/formatted/genes.txt",
 				  #"data/PROSTATE/formatted/genes.txt"
 				 )                    
@@ -30,23 +30,25 @@ GetFilePaths <-function()
 
 GetData <-function()
 {
-	my.optimizedSigmas <- c(#0.14,
-					 	    0.10#,
+	my.optimizedSigmas <- c(0.14#, <--- remove this too lol
+					 	    #0.10
 						    #0.001,
 						    #0.090
 						    )	
 					
-	my.names <- c(#"Colon Dataset"#,
-				  "Leukemia Dataset"#,
+	my.names <- c("Colon Dataset"#, <--- remove this too lol
+				  #"Leukemia Dataset",
 				  #"Lymphoma Dataset",
 				  #"Prostate Dataset"
 				 )
 
+	# NOTE: Not used yet
 	my.kpcaAccuracies <- c(0.0#,
 						   #0.0,
 						   #0.0,
 						   #0.0
 						  )
+	# NOTE: Not used yet
 	my.biplotAccuracies <- c(0.0#,
 		                     #0.0,
 							 #0.0,
@@ -113,6 +115,47 @@ readAll<-function()
 	list( expressionProfiles = my.expressionProfiles,
 		  colors = my.colors,
 		  classifications = my.classifications)
+}
+
+# NOTE: Probably want to do the tumor one since we get decent looking output for it
+
+plotDifferentAlpha <- function(data, indexToOutputAlphas)
+{
+	for (currentAlpha in seq(from=0.0, to=1.0, by=0.10))
+	{	
+		# Perform our KPCA function
+		kpca.data <- our.kpca(data$expressionProfiles[[indexToOutputAlphas]],
+ 							  kernel = "rbfdot",
+							  kpar = list(sigma = data$optimizedSigmas[indexToOutputAlphas]), # Plot optimized value
+ 							  features = 2,
+ 							  alpha = currentAlpha)
+
+				
+
+		if (options.usepdf == TRUE)
+		{
+			kpca.pdfName <- paste(data$names[indexToOutputAlphas],"_alpha_",currentAlpha,"_kpca_biplot.pdf", sep="")
+			pdf(kpca.pdfName)
+		}
+						
+		# Plot KPCA GE-Biplot with optimized sigma
+		kpca.biplot <- GE.plot(kpca.data$gene.expressions,
+							   kpca.data$micro.arrays,
+							   tit=   paste(data$names[indexToOutputAlphas],"KPCA-Biplot"),
+							   clabs= data$classifications[[indexToOutputAlphas]],
+							   glabs= "~",
+							   cclr=  data$colors[[indexToOutputAlphas]],
+							   gclr=  "black")      
+		
+		#DATASET.KPCA_ACCURACIES[i] <- doValidation(kpca.data$micro.arrays, data$classifications[[indexToOutputAlphas]])
+		
+		
+		if (options.usepdf == TRUE)
+		{
+			dev.off()
+		}
+		
+	}	
 }
 
 
@@ -245,7 +288,11 @@ DATASET_DATA$expressionProfiles <- my.data$expressionProfiles
 DATASET_DATA$colors             <- my.data$colors
 DATASET_DATA$classifications    <- my.data$classifications
 
-best.data <- plotBest(DATASET_DATA)
+#best.data <- plotBest(DATASET_DATA)
+
+# Make sure the index corresponds to whatever dataset you want to plot alphas for.
+# I'm gonna get what different alphas look like for the tumor dataset
+plotDifferentAlpha(DATASET_DATA, 1)
 
 # LYMPHOMA (BEST SIGMA = 0.001)
 # $sigmas
