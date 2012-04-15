@@ -1035,11 +1035,29 @@
 
 	\subsection{Validation}
 	\begin{frame}
-		Discussion of kernel tuning and cross validation 
+		\frametitle{Validation and sigma tuning}
+		\begin{block}{Our guiding instructions from paper}
+		``Kernel parameter can be optimized via a cross-validation step 
+		which minimizes the misclassification rate by optimizing the kernel parameter."
+		\end{block}
+		
+		Pretty \underline{vague}.
 	\end{frame}
-	
 	\begin{frame}
-		Insert pseudocode for cross validation algorithm
+		\frametitle{Validation and sigma tuning}
+		Luckily, it isn't \emph{too hard} to come up with a sound cross validation procedure.
+		
+		\begin{enumerate}
+			\item Run KPCA for a certain $\sigma$ to receive the microarray matrix mapped onto our subspace
+			\item Partition microarray matrix data into training and testing data. We did a 20-fold  validation with multiple runs ($\approx 10$) so all data would be used.
+			\item Create model with Kernel Support Vector Machine (KSVM) 
+			\begin{itemize}
+				\item Used autotuned parameters of a Radial Basis Function kernel	
+			\end{itemize}			
+			\item Compute accuracy of model by testing it against original data to see the amount of correct predictions
+			\item  Do this procedure for a vast range of $\sigma$ to find the one which maximizes prediction accuracy.
+		\end{enumerate}
+		
 	\end{frame}
 	
 	\begin{frame}
@@ -1060,17 +1078,17 @@
 			\hline
 				\textbf{COLON} &
 				0.10 &
-				- 
+				0.14
 			\\
 			\hline
 				\textbf{LYMPHOMA} &
 				0.01 &
-				-
+				0.001
 			\\
 			\hline
 				\textbf{PROSTATE} &
 				- &
-				- 
+				0.090
 			\\
 			\hline
 				\textbf{LEUKEMIA} &
@@ -1084,6 +1102,9 @@
 		
 	\end{frame}
 	
+	\begin{frame}
+		TODO: Linear graph of prediction accuracies for all 4
+	\end{frame}
 	
 	\section{Results}
 	
