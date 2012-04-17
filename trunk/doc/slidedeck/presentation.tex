@@ -842,8 +842,9 @@
 	\begin{frame}
 		\begin{block}{Optimization Parameters:}
 			\begin{itemize}
-				\item  $\alpha$ - ...
-				\item  $\sigma$ - ...
+				\item  $\alpha$: Visually observe best KPCA-Biplot for Tumor data at $\alpha$ value 0.0 - 1.0.
+				\item  $\sigma$: Create optimization algorithm to tune $\sigma$
+				based on classification predictions of unseen microarray samples.
 			\end{itemize}
 		\end{block}	
 	\end{frame}
@@ -885,9 +886,6 @@
 
 	
 	\begin{frame}
-	
-	
-		
 	
 		\begin{columns}
 			\begin{column}{1in}
@@ -993,6 +991,11 @@
 
 	\begin{frame}
 		
+		\begin{block}{\vspace{-0.5in}}
+			We used the same $\alpha$ values as the paper because we want to 
+			equally share the information that G has with H.
+		\end{block}
+		
 		\begin{table}
 		\begin{tabular}
 		{
@@ -1061,6 +1064,10 @@
 	\end{frame}
 	
 	\begin{frame}
+		
+		\begin{block}{\vspace{-0.5in}}
+			Our optimized $\sigma$ was similar but we had found theirs often to be suboptimized values.
+		\end{block}
 		
 		\begin{table}
 		\begin{tabular}
@@ -1333,7 +1340,8 @@
 			\end{center}
 			
 			\begin{block}{Inner Product Property}
-				some kind of explanation lol
+				Relationship between the 'Classifications' and 'Genes' is the two
+				multiplied together and by $\cos$ of their angle between eachother.
 			\end{block}
 		}
 		
@@ -1345,7 +1353,7 @@
 			\end{center}
 			
 			\begin{block}{Cosine Correlation Property}
-						some kind of explanation lol
+						Correlation between 'Classifications' plotted on the biplot is the $\cos$ of the angle between them.s
 			\end{block}
 			
 		}
@@ -1367,20 +1375,117 @@
 		{
 			\begin{block}{Notable Tumor Genes}
 				
+				\begin{table}
+				\begin{tabular}
+				{
+					|>{\centering\arraybackslash}m{1.50in}
+					|>{\centering\arraybackslash}m{1.00in}
+					|>{\centering\arraybackslash}m{1.00in}|
+				}
+					\hline
+						~ &
+						\textbf{Regulation} &
+						\textbf{Classification}
+					\\
+					\hline
+						T95018, T61602, T58861, T48804,
+						T57633 &
+						\textbf{$\uparrow$} &
+						Tumor
+					\\
+					\hline
+						R78934, T92451, M33680, T42-Control &
+						\textbf{$\uparrow$} &
+						No Tumor
+					\\
+					\hline
+				\end{tabular}
+			\end{table}
+				
 			\end{block}
 		}
 		
 		\only<3>
 		{
 			\begin{block}{Notable Leukemia Genes}
-				
+				\begin{table}
+				\begin{tabular}
+				{
+					|>{\centering\arraybackslash}m{1.50in}
+					|>{\centering\arraybackslash}m{1.00in}
+					|>{\centering\arraybackslash}m{1.00in}|
+				}
+					\hline
+						~ &
+						\textbf{Regulation} &
+						\textbf{Classification}
+					\\
+					\hline
+						M57710\_at,
+						M28130\_rnal\_s\_at,
+						Y00787\_s\_at &
+						\textbf{$\uparrow$} &
+						AML
+					\\
+					\hline
+						L47738, Z69881\_at &
+						\textbf{$\downarrow$} &
+						AML
+					\\
+					\hline
+						X76223\_s\_at, X00437\_s\_at &
+						\textbf{$\uparrow$} &
+						ALL T-Cell
+					\\
+					\hline
+						X82240\_rnal\_at, L33930\_s\_at &
+						\textbf{$\uparrow$} &
+						ALL B-Cell
+					\\
+					\hline
+				\end{tabular}
+				\end{table}
 			\end{block}
 		}
 		
 		\only<4>
 		{
 			\begin{block}{Notable Lymphoma Genes}
-				
+				\begin{table}
+				\begin{tabular}
+				{
+					|>{\centering\arraybackslash}m{1.50in}
+					|>{\centering\arraybackslash}m{1.00in}
+					|>{\centering\arraybackslash}m{1.00in}|
+				}
+					\hline
+						~ &
+						\textbf{Regulation} &
+						\textbf{Classification}
+					\\
+					\hline
+						1319066,1354294, 428103 &
+						\textbf{$\uparrow$} &
+						FL
+					\\
+					\hline
+						1319066,1354294, 428103 &
+						\textbf{$\downarrow$} &
+						DLCL, B-CLL
+					\\
+					\hline
+						347751, 724070 &
+						\textbf{$\uparrow$} &
+						B-CLL
+					\\
+					\hline
+						139009, 8&
+						\textbf{$\uparrow$} &
+						DLL
+					\\
+					\hline
+				\end{tabular}
+				\end{table}
 			\end{block}
 		}
 	\end{frame}	
@@ -1844,6 +1949,18 @@
 					\end{columns}
 				}
 			\end{itemize}
+		}
+		\only<9>
+		{
+			{\huge \sc Insight}
+		
+			\begin{itemize}
+				\item  KPCA often does no better empirically at seperating classifications
+				(because PCA is nonlinear)
+				\item  KPCA does a better job exposing potential differentially
+				expressed genes it appears
+				\item  Your method is only as good as your dataset
+			\end{itemize}		
 		}
 	\end{frame}
 	
