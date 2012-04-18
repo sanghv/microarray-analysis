@@ -1,0 +1,184 @@
+\documentclass{beamer}
+
+% Theme
+\usetheme{Hannover}
+\usecolortheme{crane}
+\definecolor{gray10percent}{RGB}{229, 229, 229}
+\definecolor{blockgray}{RGB}{198, 188, 169}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{etoolbox}
+\usepackage{xfrac}
+\usepackage{array}
+
+\usepackage{color}
+\usepackage{listings}
+\lstset
+    {
+       language=C,
+      captionpos=b,
+      tabsize=3,
+      keywordstyle=\color{blue},
+      commentstyle=\color[rgb]{0.133,0.545,0.133},
+      stringstyle=\color{red},
+      breaklines=true,
+      showstringspaces=false,
+      basicstyle=\footnotesize,
+      emph={label},
+      keepspaces=true,
+      emph={H,G,X,K,KPC},
+      emphstyle={\bfseries}
+    }
+    \newcommand{\codepause}{\pause \vspace{-0.165in}}
+    
+    \newcommand\ConstrainedBox[3]{
+      \makebox{\parbox[t][#1][c]{#2}{\centering#3}}}
+    
+    % Decide if notes are shown
+    \newtoggle{useNotes}
+    %\toggletrue{useNotes}
+    \togglefalse{useNotes}
+
+    \iftoggle{useNotes}
+             {
+               \usepackage{pgfpages}
+               \setbeameroption{show notes on second screen}
+             }
+    
+
+      
+             % Define title page
+             \title
+                 {
+                   KPCA-Biplots
+                 }
+                 \subtitle{An implementation and further exploration}
+                 \author
+                     {
+                       Michael Semeniuk, Albert Steppi, and \linebreak
+                       Christopher Wolas
+                     }
+                     \date
+                         {
+                           \begin{block}{}
+                             \begin{itemize}
+                             \item[~]
+                               {
+                                 \underline{Mining Gene Expression Profiles:
+                                   An Integrated} \linebreak
+                                 \underline{Implementation of Kernel Principal
+                                   Component} \linebreak
+                                 \underline{Analysis and Singular Value
+                                   Decomposition}
+                                 \begin{itemize}
+                                   \item[~] Reverter et al, Genomics Proteomics
+                                     Bioinformatics (2010)
+                                 \end{itemize}
+                               }
+                             \end{itemize}
+                           \end{block}
+                         }
+
+                         \begin{document}
+
+
+                         \begin{frame}
+                           \titlepage
+                         \end{frame}
+
+                         \begin{frame}[t]
+                           \frametitle{Singular Value Decomposition}
+                           A means of decomposing a matrix into simpler 
+                           components that reflect the overall structure.
+                           \begin{equation}                             
+                             X\;=\;UDV^{T}                             
+                           \end{equation}
+                           When $X$ is a square matrix, the geometry is simple.
+                           $U$ and $V^{T}$ are rotations and $D$
+                           is a scaling. So it says the transformation $X$ can
+                           be accomplished by first rotating, then scaling, then
+                           rotating again.
+
+                           \begin{block}{What this does for us.}
+                             \begin{itemize}
+                               \item Finds a natural system of coordinates for
+                                 the data.
+                               \item The coordinates are orthogonal, and are 
+                                 ordered by how much variance in the data they
+                                 account for.
+                               \item Allows you to reduce the dimensionality of
+                                 your problem. The first couple of coordinates
+                                 account for most of the variance in the data.
+                             \end{itemize}
+                           \end{block}                           
+                         \end{frame}
+                         
+                         \begin{frame}[t]
+                           \frametitle{Kernel Principal Component Analysis}
+                           \begin{itemize}
+                           \item
+                             Finding a natural set of coordinates for the data
+                             that are ordered by how much variance in the data
+                             they account for is known as principal component
+                             analysis. 
+                           \item
+                             This allows us to reduce dimensionality and thus
+                             visualize the data, but the relations between
+                             gene expressions and tissue traits are often
+                             highly nonlinear.
+                           \end{itemize}
+                           \begin{block}{Working with nonlinearity}
+                             \begin{itemize}
+                             \item
+                               As with support vector machines, mapping to a
+                               higher dimensional space with the help of the
+                               kernel trick can help when dealing with 
+                               nonlinearity.
+                             \item
+                               In kernel principal component analysis you map
+                               to a higher dimensional space, do principal 
+                               component analysis, then you can project your
+                               data onto the first couple of principal 
+                               components.
+                             \end{itemize}                             
+                           \end{block}
+                         \end{frame}
+                         \begin{frame}[t]
+                           \frametitle{KPCA Biplot}
+                           Using singular value decomposition, we can factor
+                           are data matrix as follows
+                           \begin{displaymath}
+                             X\;=\;GH^{T}
+                           \end{displaymath}
+                           
+                           \begin{itemize}
+                           \item
+                             Here $G$ contains information about the microarray
+                             samples and $H$ contains information about the genes
+                             under investigation.
+                           \item
+                             To create a gene expression biplot you project
+                             both $G$ and $H$ onto the first two principal
+                             components and map them together in one plot.
+                           \item
+                             To create a KPCA biplot you do kernel principal
+                             component analysis on $H$, map $G$ into the kernel
+                             space as well, then project both of them onto the 
+                             first two principal components from KPCA and plot 
+                             them together.
+                           \item
+                             This seems kind of dodgy. You do one form of PCA
+                             when you do the singular value decomposition, then
+                             you do a round of KPCA. This might not be the best
+                             approach.
+                           \end{itemize}
+                         \end{frame}
+                           
+                           
+
+
+
+                         \end{document}
