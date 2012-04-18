@@ -221,7 +221,7 @@ plotBest<-function(data)
 	}
 }
 
-doValidation <- function(microarrayMatrix,classifications)
+doValidation <- function(microarrayMatrix,classifications,name,sigmaVal)
 {	
 	runningAccuracy <- 0
 	numOfRuns       <- 2
@@ -237,9 +237,12 @@ doValidation <- function(microarrayMatrix,classifications)
 		currentAccuracy <- sum(classificationPredictions==classifications)/length(classifications)
 		runningAccuracy <- runningAccuracy + currentAccuracy
 	}
-	#plot the last one just to see what a random run would potentially look like
-	#plot(kvsmModel, data=microarrayMatrix)
-
+    library(stringr)
+	png(file=paste("graphs/",name,"_",str_replace(sigmaVal,"\\.","_"),".png",sep=""))
+    #plot the last one just to see what a random run would potentially look like
+	plot(kvsmModel, data=microarrayMatrix)
+    dev.off()
+        
 	accuracy <- runningAccuracy / numOfRuns
 	
 	accuracy
@@ -250,14 +253,14 @@ optimizeDataSet <- function(data,indexToOptimize)
 	sigmaVector     <- c(0.001, 0.010, 0.050, 0.100, # low values
 					 0.075, 0.080, 0.090, 0.10, 0.11, 0.12, 0.13, 0.14, 0.15, # normal values
 					 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00) # high values
-	
-	
+
 	optimizeSigma(data$expressionProfiles[[indexToOptimize]],
 				  data$classifications[[indexToOptimize]],
-				  sigmaVector)
+				  sigmaVector,
+                  data$names[indexToOptimize])
 }
 
-optimizeSigma <- function(expressionProfile,classifications,sigmaVector)
+optimizeSigma <- function(expressionProfile,classifications,sigmaVector,name="default")
 {
 	accuracyVector  <- rep(0,length(sigmaVector))
 	
@@ -271,7 +274,7 @@ optimizeSigma <- function(expressionProfile,classifications,sigmaVector)
  						      features = 2,
  							  alpha = 0.5)
 		sigmaAccuracies$sigmas[i]
-		sigmaAccuracies$accuracies[i] <- doValidation(kpca.data$micro.arrays, classifications)
+		sigmaAccuracies$accuracies[i] <- doValidation(kpca.data$micro.arrays, classifications, name,sigmaAccuracies$sigmas[i])
 	}
 	
 	sigmaAccuracies
@@ -290,52 +293,4 @@ DATASET_DATA$classifications    <- my.data$classifications
 
 #best.data <- plotBest(DATASET_DATA)
 
-# Make sure the index corresponds to whatever dataset you want to plot alphas for.
-# I'm gonna get what different alphas look like for the tumor dataset
-plotDifferentAlpha(DATASET_DATA, 1)
-
-# LYMPHOMA (BEST SIGMA = 0.001)
-# $sigmas
-# [1] 0.001 0.010 0.050 0.100 0.075 0.080 0.090 0.100 0.110 0.120 0.130 0.140
-#[13] 0.150 0.200 0.300 0.400 0.500 0.600 0.700 0.800 0.900 1.000
-#
-#$accuracies
-# [1] 0.8831169 0.8701299 0.8506494 0.8376623 0.8376623 0.8441558 0.8441558
-# [8] 0.8441558 0.8376623 0.8311688 0.8246753 0.8311688 0.8311688 0.8441558 <-- saturation, bad values
-#[15] 0.8766234 0.8571429 0.9090909 0.9090909 0.9090909 0.8896104 0.8961039 <-- saturation, bad values
-#[22] 0.9090909                                                             <-- saturation, bad values
-
-# TUMOR (BEST SIGMA = 0.14)
-# $sigmas
-# [1] 0.001 0.010 0.050 0.100 0.075 0.080 0.090 0.100 0.110 0.120 0.130 0.140
-#[13] 0.150 0.200 0.300 0.400 0.500 0.600 0.700 0.800 0.900 1.000 5.000
-#
-#$accuracies
-# [1] 0.8709677 0.8709677 0.8870968 0.8709677 0.8790323 0.8709677 0.8870968
-# [8] 0.8709677 0.8709677 0.8790323 0.8870968 0.9032258 0.8870968 0.7983871
-#[15] 0.7016129 0.7177419 0.7741935 0.6612903 0.7500000 0.8145161 0.7903226
-#[22] 0.7983871 0.8064516
-
-# PROSTATE (BEST SIGMA = 0.090)
-#$sigmas
-# [1] 0.001 0.010 0.050 0.100 0.075 0.080 0.090 0.100 0.110 0.120 0.130 0.140
-#[13] 0.150 0.200 0.300 0.400 0.500 0.600 0.700 0.800 0.900 1.000
-#
-#$accuracies
-# [1] 0.6764706 0.7500000 0.6960784 0.6715686 0.7401961 0.6372549 0.7500000
-# [8] 0.7107843 0.6323529 0.6715686 0.6764706 0.6274510 0.6470588 0.6421569
-#[15] 0.6568627 0.7254902 0.7500000 0.7843137 0.7892157 0.8088235 0.7990196	<-- saturation, bad values
-#[22] 0.8382353																<-- saturation, bad values
-
-# LEUKEMEIA (BEST SIGMA = 0.100)
-#$sigmas
-# [1] 0.001 0.010 0.050 0.100 0.075 0.080 0.090 0.100 0.110 0.120 0.130 0.140
-#[13] 0.150 0.200 0.300 0.400 0.500 0.600 0.700 0.800 0.900 1.000
-#
-#$accuracies
-# [1] 0.7500000 0.7777778 0.7569444 0.8194444 0.7638889 0.8125000 0.7708333
-# [8] 0.8263889 0.7847222 0.7916667 0.7777778 0.8125000 0.7847222 0.8055556
-#[15] 0.8680556 0.8472222 0.8750000 0.8333333 0.8333333 0.8333333 0.8194444	<-- saturation, bad values
-#[22] 0.8125000																<-- saturation, bad values
-
-#optimizeDataSet(DATASET_DATA,1)
+optimizeDataSet(DATASET_DATA,1)

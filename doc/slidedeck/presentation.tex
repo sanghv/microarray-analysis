@@ -1,14 +1,3 @@
-% Notes:
-% 
-% The process of decomposing a two-way table (matrix) into two component
-% matrices is called singular value decomposition (SVD), which is essentially the reverse process of
-% matrix multiplication (from GGE
-%
-%
-%
-%
-%
-
 \documentclass[serif]{beamer}
 % My beamer theme
 \usetheme{Hannover}
@@ -165,8 +154,9 @@
 				}
 				\only<2>
 				{
-					\vspace{0.5in}
-					\textbf{IMAGE OF BIPLOT}
+					\begin{center}
+						\includegraphics[height=1.2in]{images/kpca_biplot}
+					\end{center}
 				}
 				\only<3>
 				{
@@ -427,7 +417,7 @@
 						{
 							\color<1-3,5>{blockgray}
 							{
-								ANOVA fitlers
+								ANOVA filers
 							}
 						}
 					\end{enumerate}
@@ -512,26 +502,33 @@
 		\end{lstlisting}
 	\end{frame}
 
-	\begin{frame}
-		\begin{block}{TODO SVD:}
-			\begin{itemize}
-				\item  Explain SVD (high level with perhaps some math and handwaving)
-				\item  visualization of SVD (in terms of affine transforms)
-				\item  I like http://nimbledais.com/?p=57
-			\end{itemize}
-		\end{block}
-		\begin{center}
-			\includegraphics[width=2in]{images/svd_intuitive}	
-		\end{center}
-		
-	\end{frame}
-	
-	\begin{frame}
-		\begin{block}{TODO $\alpha$:}
-			Explain $\alpha$ and its purpose
-		\end{block}
-	\end{frame}
-	
+	\begin{frame}[t]
+       \frametitle{Singular Value Decomposition}
+       A means of decomposing a matrix into simpler 
+       components that reflect the overall structure.
+       \begin{equation}                             
+         X\;=\;UDV^{T}                             
+       \end{equation}
+       When $X$ is a square matrix, the geometry is simple.
+       $U$ and $V^{T}$ are rotations and $D$
+       is a scaling. So it says the transformation $X$ can
+       be accomplished by first rotating, then scaling, then
+       rotating again.
+
+       \begin{block}{What this does for us.}
+         \begin{itemize}
+           \item Finds a natural system of coordinates for
+             the data.
+           \item The coordinates are orthogonal, and are 
+             ordered by how much variance in the data they
+             account for.
+           \item Allows you to reduce the dimensionality of
+             your problem. The first couple of coordinates
+             account for most of the variance in the data.
+         \end{itemize}
+       \end{block}                           
+     \end{frame}
+
 	\subsection{Kernel Matrix}
 	
 	\begin{frame}[t, fragile]
@@ -641,41 +638,94 @@
 
 	\end{frame}
 
-	\begin{frame}
-		\begin{block}{KPCA TODO:}
-			\begin{itemize}
-			\item  Some explanation of PCA (intuitive but mathematical, perhaps)
-			\item  Extension from PCA to KPCA
-			\item  Explanation of why \emph{2} Kernel Principal Components (visualizable graphical output)	
-			\end{itemize}
+	\begin{frame}[t]
+	\frametitle{Kernel Principal Component Analysis}
+		\begin{itemize}
+		\item
+		 Finding a natural set of coordinates for the data
+		 that are ordered by how much variance in the data
+		 they account for is known as principal component
+		 analysis. 
+		\item
+		 This allows us to reduce dimensionality and thus
+		 visualize the data, but the relations between
+		 gene expressions and tissue traits are often
+		 highly nonlinear.
+		\end{itemize}
+		\begin{block}{Working with nonlinearity}
+		 \begin{itemize}
+		 \item
+		   As with support vector machines, mapping to a
+		   higher dimensional space with the help of the
+		   kernel trick can help when dealing with 
+		   nonlinearity.
+		 \item
+		   In kernel principal component analysis you map
+		   to a higher dimensional space, do principal 
+		   component analysis, then you can project your
+		   data onto the first couple of principal 
+		   components.
+		 \end{itemize}                             
 		\end{block}
-	\end{frame}
+		\end{frame}
+		
+			\subsection{Projection}
 
-	\subsection{Projection}
-	
-	\begin{frame}[t, fragile]
-		\frametitle{KPCA-Biplot Algorithm}
-		\framesubtitle{Subspace Projection}
 		
-		\begin{lstlisting}[mathescape, language=C]
-		// Compute a second Kernel Matrix for both the Gene
-		...
-		\end{lstlisting}
-		\codepause
-		\begin{lstlisting}[mathescape, language=C]
+		\begin{frame}[t]
+		\frametitle{KPCA Biplot}
+		Using singular value decomposition, we can factor
+		our data matrix as follows
+		\begin{displaymath}
+		 X\;=\;GH^{T}
+		\end{displaymath}
 		
-		// Project the microarrays G onto the subspace
-		G$_{Projection}$ = K$^{T} \times $ KPC$_{ H }$
-		\end{lstlisting}		
-	\end{frame}
-	
-	\begin{frame}
-		\begin{block}{Subspace Projection TODO:}
-			\begin{itemize}
-				\item  Write how it works
-			\end{itemize}
-		\end{block}
-	\end{frame}
+		{
+		\footnotesize
+		\begin{itemize}
+		\item
+		{
+		 \color<2-4>{gray10percent}
+		 {
+		 Here $G$ contains information about the microarray
+		 samples and $H$ contains information about the genes
+		 under investigation.
+		 }
+		}
+		\item
+		{
+		 \color<1,3-4>{gray10percent}
+		 {
+		To create a gene expression biplot you \textbf{project}
+		 both $G$ and $H$ onto the first two principal
+		 components and map them together in one plot.
+		 }
+		}
+		\item
+		{
+		 \color<1-2,4>{gray10percent}
+		 {
+		To create a KPCA biplot you do kernel principal
+		 component analysis on $H$, map $G$ into the kernel
+		 space as well, then project both of them onto the 
+		 first two principal components from KPCA and plot 
+		 them together.
+		 }
+		}
+		\item
+		{
+		 \color<1-3>{gray10percent}
+		 {
+		This seems kind of dodgy. You do one form of PCA
+		 when you do the singular value decomposition, then
+		 you do a round of KPCA. This might not be the best
+		 approach.
+		 }
+		}
+		\end{itemize}
+		}
+	\end{frame}	
+
 	
 	\subsection{Biplot}
 
@@ -722,12 +772,80 @@
 		
 	\end{frame}
 	
+	\begin{frame}[t]
+		\frametitle{Biplot Interpretations}
+		\framesubtitle{Err... now what?}
+	
+		\only<1>
+		{
+		\large
+		\begin{block}{\vspace{-0.5in}}
+			Reading a biplot is \emph{intuitive} \underline{after} you grasp the concepts. 	
+		\end{block}
+		\raggedright Until then...
+		\begin{center}
+			\includegraphics[height=1.5in]{images/confused}	
+		\end{center}
+		\raggedleft ...It's rather confusing.
+		}
+		\only<2>
+		{
+			\begin{block}{\vspace{-0.5in}}
+				When $\alpha$ = 0.5, the following geometric relationships hold:
+			\end{block}
+			\begin{itemize}
+				\item The distance between each pair of chips 
+approximates the standard euclidean distance 
+between the chips.
+				\item The distance between each pair of genes 
+approximates the variance of their difference.
+				\item The distance from the origin to a gene 
+approximates the variance of that gene.
+				\item The cosine of the angle between two genes 
+approximates the correlation between them.
+			\end{itemize}
+		}
+		
+		\only<3>
+		{
+			\begin{columns}
+				\begin{column}{1.5in}
+					\begin{center}
+						\includegraphics[width=1.5in,height=1.0in]{images/biplot_expl/up_reg}
+					\end{center}
+				\end{column}
+				\begin{column}{2.5in}
+					\begin{block}{Upregulation}	
+						Genes that lie \textbf{close} to a cluster of samples are more highly expressed (upregulated) in that cluster of samples versus others.
+					\end{block}
+				\end{column}
+			\end{columns}
+			\vspace{0.30in}
+			\begin{columns}
+				\begin{column}{1.5in}
+					\begin{center}
+						\includegraphics[width=1.5in,height=1.0in]{images/biplot_expl/down_reg}
+					\end{center}
+				\end{column}
+				\begin{column}{2.5in}
+					\begin{block}{Downregulation}
+						Likewise, Genes that lie \textbf{far away} from a cluster of samples are less expressed (downregulated) in that cluster of samples versus others.
+					\end{block}
+				\end{column}
+			\end{columns}
+		}
+		
+		
+		
+	\end{frame}
+	
+	
 	\section{Datasets}
 	\begin{frame}[t]
 		\frametitle{Datasets}
 
 		\begin{block}{\vspace{-0.5in}	}		
-			In our research we've used {\bf 4} freely available datasets with labeled samples.
+			In our research we've used {\bf 3} freely available datasets with labeled samples.
 		\end{block}
 
 		% http://icos.cs.nott.ac.uk/datasets/microarray.html
@@ -739,8 +857,8 @@
 	 		\setcounter{enumi}{0}
 			\item {\bf COLON dataset}: 
 				\begin{itemize}
-					\item  $ Labels: \left \{ \textsc{ Tumor}, \textsc{ No Tumor}  \right \}$
 					\item 2,000 gene expression levels
+					\item  $ Labels: \left \{ \textsc{ Tumor}, \textsc{ No Tumor}  \right \}$
 					\item  62 samples
 					\begin{itemize}
 						\item[$\rightarrow$] How many tumor
@@ -748,9 +866,8 @@
 					\end{itemize}
 					\item  \textsc{Preprocessing:}
 					\begin{itemize}
-						\item[$\rightarrow$] Item 1
-						\item[$\rightarrow$] Item 2
-						\item[$\rightarrow$] Item 3
+						\item[$\rightarrow$] Standardization across samples by mean intensity.
+						\item[$\rightarrow$] Median filter to eliminate outliers from local neighborhood of features.
 					\end{itemize}
 				\end{itemize}
 		\end{enumerate}
@@ -761,10 +878,10 @@
 	 		\setcounter{enumi}{1}
 			\item {\bf LYMPHOMA dataset}: 
 				\begin{itemize}
+					\item 6,817 gene expression levels
 					\item  $ Labels: 
 						\left \{ \textsc{DLBCL}\footnote{Diffuse large B-cell lymphoma},
 							 \textsc{FL}\footnote{Follicular lymphoma}  \right \}$
-					\item 6,817 gene expression levels
 					\item 77 samples
 					\begin{itemize}
 						\item[$\rightarrow$] \textsc{DLBCL} Samples: 58
@@ -787,8 +904,8 @@
 			\setcounter{enumi}{2}
 			\item {\bf PROSTATE dataset}:
 				\begin{itemize}
-					\item  $ Labels: \left \{ \text{Tumor}, \text{No Tumor}  \right \}$
 					\item 2,135 gene expression levels
+					\item  $ Labels: \left \{ \text{Tumor}, \text{No Tumor}  \right \}$
 					\item  77 samples
 					\begin{itemize}
 						\item[$\rightarrow$]  \textsc{Tumor} Samples: 52
@@ -803,32 +920,6 @@
 				\end{itemize}
 		\end{enumerate}
 		}
-		\only<4>
-		{
-		\begin{enumerate}
-			\setcounter{enumi}{3}
-			% http://www.biolab.si/supp/bi-cancer/projections/info/leukemia.htm
-			\item {\bf Leukemia dataset}:
-					\begin{itemize}
-					\item  $ Labels: 	\left
-						 \{ \text{ALL}\footnote{Acute lymphoblastic leukemia},
-						 \text{AML}\footnote{Acute myeloid leukemia}
-								 \right \}$
-					\item 5,147 gene expression levels
-					\item 72 samples
-					\begin{itemize}
-						\item[$\rightarrow$] \textsc{ALL} Samples: 47
-						\item[$\rightarrow$] \textsc{AML} Samples: 25
-					\end{itemize}
-					\item  \textsc{Preprocessing:}
-					\begin{itemize}
-						\item[$\rightarrow$] Item 1
-						\item[$\rightarrow$] Item 2
-						\item[$\rightarrow$] Item 3
-					\end{itemize}
-				\end{itemize}
-		\end{enumerate}		
-		}
 	\end{frame}
 
 	\subsection{Tuning}
@@ -842,8 +933,9 @@
 	\begin{frame}
 		\begin{block}{Optimization Parameters:}
 			\begin{itemize}
-				\item  $\alpha$: Visually observe best KPCA-Biplot for Tumor data at $\alpha$ value 0.0 - 1.0.
+				\item  $\alpha$: Visually observe KPCA-Biplot for Tumor data at $\alpha$ value 0.0 - 1.0. Geometric relations only hold for 0.5 however.
 				\item  $\sigma$: Create optimization algorithm to tune $\sigma$
+				\newline
 				based on classification predictions of unseen microarray samples.
 			\end{itemize}
 		\end{block}	
@@ -1025,11 +1117,6 @@
 				0.50
 			\\
 			\hline
-				\textbf{LEUKEMIA} &
-				0.50 &
-				0.50  
-			\\
-			\hline
 		\end{tabular}
 		\caption{ $\alpha$ values for biplot}
 	\end{table}
@@ -1043,26 +1130,128 @@
 		``Kernel parameter can be optimized via a cross-validation step 
 		which minimizes the misclassification rate by optimizing the kernel parameter."
 		\end{block}
+		\begin{center}
+		{\large Pretty \underline{vague}.}	
+		\end{center}
 		
-		Pretty \underline{vague}.
 	\end{frame}
 	\begin{frame}
 		\frametitle{Validation and sigma tuning}
 		Luckily, it isn't \emph{too hard} to come up with a sound cross validation procedure.
 		
 		\begin{enumerate}
-			\item Run KPCA for a certain $\sigma$ to receive the microarray matrix mapped onto our subspace
-			\item Partition microarray matrix data into training and testing data. We did a 20-fold  validation with multiple runs ($\approx 10$) so all data would be used.
-			\item Create model with Kernel Support Vector Machine (KSVM) 
-			\begin{itemize}
-				\item Used autotuned parameters of a Radial Basis Function kernel	
-			\end{itemize}			
-			\item Compute accuracy of model by testing it against original data to see the amount of correct predictions
-			\item  Do this procedure for a vast range of $\sigma$ to find the one which maximizes prediction accuracy.
+			\item
+			{		
+				\color<2-5>{gray10percent}
+				{				
+					Run KPCA for a certain $\sigma$ to receive the microarray matrix mapped onto our subspace
+				}
+			}
+			\item
+			{
+				\color<1,3-5>{gray10percent}
+				{		
+					Partition microarray matrix data into training and testing data. We did a 20-fold  validation ($\approx 10$) so all data would be used and then repeated multiple times for accuracy.
+				}
+			}
+			\item
+			{
+				\color<1-2,4-5>{gray10percent}
+				{		
+					Create model from testing data with Kernel Support Vector Machine (KSVM) 
+				}
+			
+				\begin{itemize}
+					\item[$\rightarrow$]
+					{
+						\color<1-2,4-5>{gray10percent}
+						{		
+							Used autotuned parameters of a Radial Basis Function kernel
+						
+						}
+					}					
+				\end{itemize}			
+			}
+			\item
+			{
+				
+				\color<1-3,5>{gray10percent}
+				{		
+					Compute accuracy of model by testing it against original data to see the amount of correct predictions
+				}
+			}
+			\item 
+			{
+				\color<1-4>{gray10percent}
+				{		
+					Do this procedure for a vast range of $\sigma$ to find the one which maximizes prediction accuracy.
+				}
+			}
 		\end{enumerate}
 		
 	\end{frame}
 	
+	
+	\begin{frame}[t]
+		\only<1>
+		{
+			\begin{center}
+				\begin{exampleblock}{Colon Dataset Optimizaiton}
+					Most Appropriate $\sigma$ = 0.14
+				\end{exampleblock}
+			\end{center}
+			\begin{center}
+				\includegraphics[width=3.0in]{images/sigma_graphs/sigma_graph_for_Tumor}
+			\end{center}
+		}
+		\only<2>
+		{
+			\begin{center}
+				\includegraphics[height=1.2in]{images/ksvm/to_compare}	
+			\end{center}
+			\vspace{-0.3in}
+			\begin{columns}
+				\begin{column}{2in}
+					\begin{center}
+						\includegraphics[height=1.2in]{images/ksvm/optimal}	
+					\end{center}
+					\vspace{-0.2in}
+					\begin{block}{Optimal}
+						KSVM constructs a model given the training data that closely represents the actual data.
+					\end{block}
+				\end{column}
+				\begin{column}{2in}
+					\begin{center}
+						\includegraphics[height=1.2in]{images/ksvm/bad}	
+					\end{center}
+					\vspace{-0.2in}
+					\begin{block}{Bad Clustering}
+						KSVM constructs a model given the training data that over/underfits or is non-sensical.
+					\end{block}										
+				\end{column}
+			\end{columns}
+		}
+		\only<3>
+		{
+			\begin{center}
+				\begin{exampleblock}{Prostate Dataset Optimizaiton}
+					Most Appropriate $\sigma$ = 0.09
+				\end{exampleblock}
+				\includegraphics[width=3.0in]{images/sigma_graphs/sigma_graph_for_Prostate}
+			\end{center}
+		}
+		\only<4>
+		{
+			\begin{center}
+				\begin{exampleblock}{Lymphoma Dataset Optimizaiton}
+					Most Appropriate $\sigma$ = 0.001
+				\end{exampleblock}
+				\includegraphics[width=3.0in]{images/sigma_graphs/sigma_graph_for_Lymphoma}
+			\end{center}
+		}
+		
+	\end{frame}
+
 	\begin{frame}
 		
 		\begin{block}{\vspace{-0.5in}}
@@ -1098,22 +1287,110 @@
 				0.090
 			\\
 			\hline
-				\textbf{LEUKEMIA} &
-				0.001 &
-				- 
-			\\
-			\hline
 		\end{tabular}
 		\caption{Optimized $\sigma$ for kernel}
 	\end{table}
 		
 	\end{frame}
+
+
+	\begin{frame}[t]
+		\frametitle{Additional Validation}
+		\framesubtitle{Information Theory}
+		
+		Additionally, on top of replicating the validation procedure we can:
+		
+		\begin{itemize}
+			\item  Use Information Theory to give more information
+			\item  Perform unsupervised clustering using gene expression only
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}[t]
+		\frametitle{Use a K-Means method to find clustering}
+		
+		{\huge \textbf{Problem:} How Many Clusters?}
+		
+		\begin{block}{Methods}
+			\begin{itemize}
+				% CITE MARDIA
+				\item  $\sqrt{\frac{n}{2}}$ \cite{Mardia}
+				% CITE SUGAR AND JAMES
+				\item  Jump Algorithm \cite{SugarJames}
+			\end{itemize}
+		\end{block}
+		
+		\begin{block}{Methods in action}
+			\begin{columns}
+				\begin{column}{2in}
+					\begin{itemize}
+						\item  Mardia: 50 clusters
+						\item  Sugar \& James: 2 clusters
+					\end{itemize}
+				\end{column}
+				\begin{column}{2in}
+					\includegraphics[width=1.5in]{images/JUMP/clustering_example}
+				\end{column}
+			\end{columns}
+		\end{block}
+		
+	\end{frame}
 	
 	\begin{frame}
-		TODO: Linear graph of prediction accuracies for all 4
+		\begin{columns}
+			\begin{column}{2in}
+				\only<1>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in]{images/JUMP/COLON}
+					\end{center}
+				}
+				\only<2>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in]{images/JUMP/LYMPHOMA}
+					\end{center}
+				}
+			\end{column}
+			\begin{column}{2in}
+				\only<1>
+				{
+					\begin{block}{Colon Dataset}
+						\begin{itemize}
+							\item[$\rightarrow$] 1 cluster found
+						\end{itemize}
+					\end{block}
+				}
+				\only<2>
+				{
+					\begin{block}{Lymphoma Dataset}
+						\begin{itemize}
+							\item[$\rightarrow$] 3 clusters found
+						\end{itemize}
+					\end{block}
+				}
+			\end{column}
+		\end{columns}
+	\end{frame}
+	
+	\begin{frame}
+		{\huge Problems}
+		\begin{itemize}
+			\item Literature
+			\item  Find more data sets to find a happy medium
+			\item  $\sigma$ = 0.1 has only one cluster, though it has the optimal split (by Paper's method)
+			\item  Getting Gene Names and Connecting to Biology splits/cluster
+		\end{itemize}
 	\end{frame}
 	
 	\section{Results}
+	
+	\begin{frame}
+		\begin{center}
+			{\huge KPCA-Biplot Results}
+		\end{center}
+	\end{frame}
 	
 	\begin{frame}[t]
 
@@ -1121,23 +1398,41 @@
 		{
 			\only<1-2>
 			{
-				TUMOR Dataset
+				COLON Dataset
 			}
-			\only<3-4>
-			{
-				LEUKEMIA Datasets
-			}
-			\only<5>
+			\only<3>
 			{
 				PROSTATE Datasts
 			}
-			\only<6>
+			\only<4-5>
 			{
 				LYMPHOMA Dataset
 			}
 		}
 		{
-			TODO:Compare two graphs
+			\only<1>
+			{
+				Although scalings are different, both are easily interpretable
+				and easy to find the more/less regulated.
+			}
+			\only<2>
+			{
+				KPCA-Biplot allows for better identification of regulated genes than biplots.
+			}
+			\only<3>
+			{
+				Neither traditional biplot or KPCA-biplot could correctly cluster
+				genes however it is easier to examine genes using KPCA.
+			}
+			\only<4>
+			{
+				Our dataset excluded B-CLL samples. Similar style clusterings on
+				opposite ends.
+			}
+			\only<5>
+			{
+				Optimal KPCA-Biplot only \emph{very slightly} different from original biplot graph.
+			}
 		}	
 		\end{block}
 
@@ -1155,17 +1450,7 @@
 						}
 					\end{center}
 				}
-				\only<3-4>
-				{
-					\begin{center}
-						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LEUKEMIA_OUR_KPCA_BIPLOT}\newline
-						\ConstrainedBox{0.25in}{1.75in}
-						{
-							Our KPCA-Biplot
-						}
-					\end{center}
-				}
-				\only<5>
+				\only<3>
 				{
 					\begin{center}
 						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/PROSTATE_OUR_KPCA_BIPLOT}\newline
@@ -1175,7 +1460,7 @@
 						}
 					\end{center}
 				}
-				\only<6>
+				\only<4>
 				{
 					\begin{center}
 						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LYMPHOMA_OUR_KPCA_BIPLOT}\newline
@@ -1185,7 +1470,16 @@
 						}
 					\end{center}
 				}
-				
+				\only<5>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LYMPHOMA_OUR_KPCA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Our KPCA-Biplot
+						}
+					\end{center}
+				}
 				
 			\end{column}
 			\begin{column}{0.5in}
@@ -1224,33 +1518,8 @@
 						}
 					\end{center}
 				}
-				%
-				% LYMPHOMA
-				%
+				
 				\only<3>
-				{
-					\begin{center}
-						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LEUKEMIA_REVERTER_KPCA_BIPLOT}\newline
-						\ConstrainedBox{0.25in}{1.75in}
-						{
-							Reverter et Al.
-							KPCA-Biplot
-						}
-						
-					\end{center}
-				}
-				\only<4>
-				{
-					\begin{center}
-						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LEUKEMIA_BIPLOT}\newline
-						\ConstrainedBox{0.25in}{1.75in}
-						{
-							Standard Biplot
-						}
-						
-					\end{center}
-				}
-				\only<5>
 				{
 					\begin{center}
 						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/PROSTATE_BIPLOT}\newline
@@ -1260,7 +1529,18 @@
 						}
 					\end{center}
 				}
-				\only<6>
+				\only<4>
+				{
+					\begin{center}
+						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LYMPHOMA_REVERTER_KPCA_BIPLOT}\newline
+						\ConstrainedBox{0.25in}{1.75in}
+						{
+							Reverter et Al.
+							KPCA-Biplot
+						}
+					\end{center}
+				}
+				\only<5>
 				{
 					\begin{center}
 						\includegraphics[width=1.5in, height=1.5in]{images/final_graphs/LYMPHOMA_BIPLOT}\newline
@@ -1275,90 +1555,6 @@
 		
 	\end{frame}
 	
-	\begin{frame}[t]
-		\frametitle{Biplot Interpretations}
-		\framesubtitle{Err... now what?}
-	
-		\only<1>
-		{
-		\large
-		\begin{block}{\vspace{-0.5in}}
-			Reading a biplot is \emph{intuitive} \underline{after} you grasp the concepts. 	
-		\end{block}
-		\raggedright Until then...
-		\begin{center}
-			\includegraphics[height=1.5in]{images/confused}	
-		\end{center}
-		\raggedleft ...It's rather confusing.
-		}
-		
-		\only<2>
-		{
-			\begin{columns}
-				\begin{column}{1.5in}
-					Some image
-				\end{column}
-				\begin{column}{2.5in}
-					\begin{block}{Upregulation}	
-						Genes that lie \textbf{close} to a cluster of samples are more highly expressed (upregulated) in that cluster of samples versus others.
-					\end{block}
-				\end{column}
-			\end{columns}
-			\vspace{0.30in}
-			\begin{columns}
-				\begin{column}{1.5in}
-					Some image
-				\end{column}
-				\begin{column}{2.5in}
-					\begin{block}{Downregulation}
-						Likewise, Genes that lie \textbf{far away} from a cluster of samples are less expressed (downregulated) in that cluster of samples versus others.
-					\end{block}
-				\end{column}
-			\end{columns}
-		}
-		
-		\only<3>
-		{
-			\vspace{0.75in}
-			\begin{columns}
-				\begin{column}{1.5in}
-					Some image
-				\end{column}
-				\begin{column}{2.5in}
-					\begin{block}{Differential Expression}
-						Genes that are \textbf{further away} from the origin are more differentially expressed than genes that are \textbf{closer} to the origin.
-					\end{block}
-				\end{column}
-			\end{columns}
-		}
-		
-		\only<4>
-		{
-			% CITE: http://www.ggebiplot.com/hs40.htm
-			\begin{center}
-				\includegraphics[width=2.0in]{images/inner_product_property_biplot}
-			\end{center}
-			
-			\begin{block}{Inner Product Property}
-				Relationship between the 'Classifications' and 'Genes' is the two
-				multiplied together and by $\cos$ of their angle between eachother.
-			\end{block}
-		}
-		
-		\only<5>
-		{
-			% CITE: http://www.ggebiplot.com/hs40.htm
-			\begin{center}
-				\includegraphics[width=2.0in]{images/cosine_correlation_property_biplot}	
-			\end{center}
-			
-			\begin{block}{Cosine Correlation Property}
-						Correlation between 'Classifications' plotted on the biplot is the $\cos$ of the angle between them.s
-			\end{block}
-			
-		}
-		
-	\end{frame}
 	
 	
 	\section{Analysis}
@@ -1406,49 +1602,6 @@
 		}
 		
 		\only<3>
-		{
-			\begin{block}{Notable Leukemia Genes}
-				\begin{table}
-				\begin{tabular}
-				{
-					|>{\centering\arraybackslash}m{1.50in}
-					|>{\centering\arraybackslash}m{1.00in}
-					|>{\centering\arraybackslash}m{1.00in}|
-				}
-					\hline
-						~ &
-						\textbf{Regulation} &
-						\textbf{Classification}
-					\\
-					\hline
-						M57710\_at,
-						M28130\_rnal\_s\_at,
-						Y00787\_s\_at &
-						\textbf{$\uparrow$} &
-						AML
-					\\
-					\hline
-						L47738, Z69881\_at &
-						\textbf{$\downarrow$} &
-						AML
-					\\
-					\hline
-						X76223\_s\_at, X00437\_s\_at &
-						\textbf{$\uparrow$} &
-						ALL T-Cell
-					\\
-					\hline
-						X82240\_rnal\_at, L33930\_s\_at &
-						\textbf{$\uparrow$} &
-						ALL B-Cell
-					\\
-					\hline
-				\end{tabular}
-				\end{table}
-			\end{block}
-		}
-		
-		\only<4>
 		{
 			\begin{block}{Notable Lymphoma Genes}
 				\begin{table}
@@ -1600,7 +1753,7 @@
 					\color<2-3>{gray10percent}
 					{
 						\footnotesize
-						Datasets were readily available
+						Datasets were available for free.
 					}
 					\vspace{-0.2in}
 					\begin{columns}
@@ -1628,7 +1781,7 @@
 									\color<2-3>{blockgray}
 									{
 									\footnotesize
-									Some formatting and massaging was needed
+									Some formatting and massaging was required
 									}
 								\end{column}	
 							\end{columns}
@@ -1830,7 +1983,7 @@
 					\color<7-8>{gray10percent}
 					{
 						\footnotesize
-						Cross validation methodology was too vague to be replicated.
+						Cross validation methodology was vague.
 					}
 					\vspace{-0.2in}
 					\begin{columns}
@@ -1940,7 +2093,7 @@
 									\color<6-7>{blockgray}
 									{
 										\footnotesize
-										Had to search high and low to get datasets that were applicable for our implementation.
+										Had to search high and low to get datasets that were applicable for our implementation. Many duds found along the way.
 									}
 								\end{column}	
 							\end{columns}
@@ -1991,7 +2144,8 @@
 	\end{frame}
 
 	\begin{frame}
-		Bib
+		\textbf{TODO:}Will do eventually. \newline
+		Bibliography
 	\end{frame}
 	
 \end{document}
