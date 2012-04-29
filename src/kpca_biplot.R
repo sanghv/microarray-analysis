@@ -20,10 +20,6 @@ our.kpca <- function(x, kernel = "rbfdot", kpar = list(sigma = 0.1),
   {
     x <- as.matrix(x)
     
-    # I don't even know if what i'm about to do is valid...
-    # In order to guarantee that we can take the log of the values is positive
-    # we will translate all of the values so they are at least 1 because
-    # anything less is not defined when taking the logarithm of that value
     minElement.index <- which(x == min(x), arr.ind = TRUE)
     minElement.value <- x[minElement.index[1,1], minElement.index[1,2]]
     if (minElement.value <= 0)

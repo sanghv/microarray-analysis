@@ -1,26 +1,25 @@
 # Change to your respective trunk
-TRUNK.DIR<-"C:/Users/King Charles/workspace/cap-6545-microarray-analysis/"
-#TRUNK.DIR<-"~/cap-6545-microarray-analysis/"
+TRUNK.DIR<-"~/cap-6545-microarray-analysis/"
 
 COLOR.PALETTE = c("green","red","blue","orange","purple","pink")
 
 GetFilePaths <-function()
 {
 	# A bunch of static data for our datasets that we will be reading in
-	my.expressionProfiles <- c("data/COLON/formatted/expression_profiles.csv"#, <--- remove this too lol
-	    					   #"data/LEUKEMIA/formatted/expression_profiles.csv",
-						       #"data/LYMPHOMA/formatted/expression_profiles.csv",
-							   #"data/PROSTATE/formatted/expression_profiles.csv"
+	my.expressionProfiles <- c("data/COLON/formatted/expression_profiles.csv",
+	    					   "data/LEUKEMIA/formatted/expression_profiles.csv",
+						       "data/LYMPHOMA/formatted/expression_profiles.csv",
+							   "data/PROSTATE/formatted/expression_profiles.csv"
 							   )
-	my.classifications <- c("data/COLON/formatted/classification.txt"#, <--- remove this too lol
-							#"data/LEUKEMIA/formatted/classification.txt",
-							#"data/LYMPHOMA/formatted/classification.txt",
-							#"data/PROSTATE/formatted/classification.txt"
+	my.classifications <- c("data/COLON/formatted/classification.txt",
+							"data/LEUKEMIA/formatted/classification.txt",
+							"data/LYMPHOMA/formatted/classification.txt",
+							"data/PROSTATE/formatted/classification.txt"
 							)
-	my.genes <- c("data/COLON/formatted/genes.txt"#, <--- remove this too lol
-				  #"data/LEUKEMIA/formatted/genes.txt",
-				  #"data/LYMPHOMA/formatted/genes.txt",
-				  #"data/PROSTATE/formatted/genes.txt"
+	my.genes <- c("data/COLON/formatted/genes.txt",
+				  "data/LEUKEMIA/formatted/genes.txt",
+				  "data/LYMPHOMA/formatted/genes.txt",
+				  "data/PROSTATE/formatted/genes.txt"
 				 )                    
 				
 	data.frame( expressionProfiles = my.expressionProfiles,
@@ -30,29 +29,29 @@ GetFilePaths <-function()
 
 GetData <-function()
 {
-	my.optimizedSigmas <- c(0.14#, <--- remove this too lol
-					 	    #0.10
-						    #0.001,
-						    #0.090
+	my.optimizedSigmas <- c(0.14,
+					 	    0.10
+						    0.001,
+						    0.090
 						    )	
 					
-	my.names <- c("Colon Dataset"#, <--- remove this too lol
-				  #"Leukemia Dataset",
-				  #"Lymphoma Dataset",
-				  #"Prostate Dataset"
+	my.names <- c("Colon Dataset", 
+				  "Leukemia Dataset",
+				  "Lymphoma Dataset",
+				  "Prostate Dataset"
 				 )
 
 	# NOTE: Not used yet
-	my.kpcaAccuracies <- c(0.0#,
-						   #0.0,
-						   #0.0,
-						   #0.0
+	my.kpcaAccuracies <- c(0.0,
+						   0.0,
+						   0.0,
+						   0.0
 						  )
 	# NOTE: Not used yet
-	my.biplotAccuracies <- c(0.0#,
-		                     #0.0,
-							 #0.0,
-							 #0.0
+	my.biplotAccuracies <- c(0.0,
+		                     0.0,
+							 0.0,
+							 0.0
 							)						
 						
 	
@@ -117,7 +116,6 @@ readAll<-function()
 		  classifications = my.classifications)
 }
 
-# NOTE: Probably want to do the tumor one since we get decent looking output for it
 
 plotDifferentAlpha <- function(data, indexToOutputAlphas)
 {

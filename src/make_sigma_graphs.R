@@ -41,7 +41,7 @@ makeSigmaGraph("Prostate",data.frame(sigmas = c( 0.001, 0.010, 0.050, 0.100, 0.0
                                             
 
 ###################
-# PROSTATE DATASET
+# TUMOR DATASET
 #                                   
 # MOST APPROPRIATE SIGMA = 0.14
 ##################
@@ -51,13 +51,3 @@ makeSigmaGraph("Tumor",data.frame(sigmas = c( 0.001, 0.010, 0.050, 0.100, 0.075,
                                               0.8709677, 0.8709677, 0.8790323, 0.8870968, 0.9032258, 0.8870968, 0.7983871,
                                               0.7016129, 0.7177419, 0.7741935, 0.6612903, 0.7500000, 0.8145161, 0.7903226,
                                               0.7983871)))
-
-
-###################
-# LEUKEMIA DATASET
-#
-# MOST APPROPRIATE SIGMA = ???
-###################                                          
-#makeSigmaGraph("Leukemia",data.frame(sigmas = c(),
-#					                 acc = c()))
-        
